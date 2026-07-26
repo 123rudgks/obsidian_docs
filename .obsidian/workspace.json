@@ -13,28 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Welcome.md",
+                "file": "Java/3. 조건문과 반복문.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Welcome"
-            }
-          }
-        ]
-      },
-      {
-        "id": "8710ce36429b6cad",
-        "type": "tabs",
-        "children": [
-          {
-            "id": "fb23b724772ec091",
-            "type": "leaf",
-            "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "title": "3. 조건문과 반복문"
             }
           }
         ]
@@ -94,7 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 253.5
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -201,6 +185,20 @@
   },
   "active": "057d68ab6e77a411",
   "lastOpenFiles": [
-    "Welcome.md"
+    "Java/1. 변수(variable).md",
+    "Screenshot 2026-07-26 at 1.00.35 PM.png",
+    "Java/README.md",
+    "Java/5. 객체지향 프로그래밍 I.md",
+    "Java/11..md",
+    "Java/10. 컬렉션 프레임웍(collections framework).md",
+    "Java/9. 날짜와 시간 & 형식.md",
+    "Java/8. java.lang 패키지와 유용한 클래스.md",
+    "Java/7. 예외 처리(exception handling).md",
+    "Java/6. 객체지향 프로그래밍 II.md",
+    "Java/4. 배열.md",
+    "Java/3. 조건문과 반복문.md",
+    "Java/2. 연산자(operator).md",
+    "How to Study.md",
+    "Java"
   ]
 }
