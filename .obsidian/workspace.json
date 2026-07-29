@@ -89,8 +89,7 @@
               "title": "Bookmarks"
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -199,18 +198,20 @@
       "bases:새 베이스 생성하기": false
     }
   },
-  "active": "ea781b0e4a1a28d3",
+  "active": "6e2787e6e029bd3e",
   "lastOpenFiles": [
-    "Java/4. 배열.md",
-    "싸피 1회차 월말평가.md",
-    "보충이 필요한 단원.md",
-    "막 노트.md",
-    "교재 예제 모음.md",
     "1회차 과목 평가, 월말 평가 가이드.md",
+    "교재 예제 모음.md",
+    "막 노트.md",
+    "보충이 필요한 단원.md",
+    "싸피 1회차 월말평가.md",
+    "How to Study.md",
+    "Java/3. 조건문과 반복문.md",
+    "Java/2. 연산자(operator).md",
+    "Java/1. 변수(variable).md",
+    "Java/4. 배열.md",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
-    "Java/3. 조건문과 반복문.md",
-    "Java/1. 변수(variable).md",
     "Screenshot 2026-07-26 at 1.00.35 PM.png",
     "Java/README.md",
     "Java/5. 객체지향 프로그래밍 I.md",
@@ -220,8 +221,6 @@
     "Java/8. java.lang 패키지와 유용한 클래스.md",
     "Java/7. 예외 처리(exception handling).md",
     "Java/6. 객체지향 프로그래밍 II.md",
-    "Java/2. 연산자(operator).md",
-    "How to Study.md",
     "Java"
   ]
 }
