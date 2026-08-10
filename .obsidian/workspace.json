@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI정리.md",
+                "file": "AI정리2.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AI정리"
+              "title": "AI정리2"
             }
           }
         ]
@@ -46,7 +46,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "파일 탐색기"
             }
           },
           {
@@ -80,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 253.5,
-    "collapsed": true
+    "width": 253.5
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -177,20 +176,22 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false
     }
   },
   "active": "510560af733c2c80",
   "lastOpenFiles": [
-    "How to Study.md",
     "AI정리.md",
+    "AI정리2.md",
+    "1회차 과목 평가, 월말 평가 가이드.md",
     "공부 진행 상황.md",
+    "How to Study.md",
     "막 노트.md",
     "Pasted image 20260806160418.png",
     "모의고사/모의고사 1회 - 해설.md",
@@ -200,7 +201,6 @@
     "교재 예제 모음.md",
     "Java/8. 예외 처리.md",
     "코테 입출력 예시.md",
-    "1회차 과목 평가, 월말 평가 가이드.md",
     "문제 만들기 프롬프트.md",
     "모의고사/모의고사 2회 - 해설.md",
     "모의고사/모의고사 2회 - 문제.md",
@@ -215,7 +215,6 @@
     "관통 프로젝트 26-07-30.md",
     "Java/5. 객체지향 프로그래밍1.md",
     "Java/4. 배열.md",
-    "Java/1. 변수(variable).md",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
     "Screenshot 2026-07-26 at 1.00.35 PM.png",
