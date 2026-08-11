@@ -4,21 +4,21 @@
     "type": "split",
     "children": [
       {
-        "id": "3707895cf89f8fbc",
+        "id": "c4673c7b4b47633a",
         "type": "tabs",
         "children": [
           {
-            "id": "510560af733c2c80",
+            "id": "721feed6411dd0be",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI정리.md",
+                "file": "Java/알고리즘 오답노트/2026-08-12.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AI정리"
+              "title": "2026-08-12"
             }
           }
         ]
@@ -80,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 253.5,
-    "collapsed": true
+    "width": 253.5
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -186,10 +185,12 @@
       "bases:Create new base": false
     }
   },
-  "active": "510560af733c2c80",
+  "active": "721feed6411dd0be",
   "lastOpenFiles": [
-    "How to Study.md",
+    "Java/알고리즘 오답노트/2026-08-12.md",
+    "Java/알고리즘 오답노트",
     "AI정리.md",
+    "How to Study.md",
     "공부 진행 상황.md",
     "막 노트.md",
     "Pasted image 20260806160418.png",
@@ -215,7 +216,6 @@
     "관통 프로젝트 26-07-30.md",
     "Java/5. 객체지향 프로그래밍1.md",
     "Java/4. 배열.md",
-    "Java/1. 변수(variable).md",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
     "Screenshot 2026-07-26 at 1.00.35 PM.png",
