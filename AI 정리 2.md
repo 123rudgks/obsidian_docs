@@ -255,9 +255,7 @@ $$
 
 즉,
 
-$$
-C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t
-$$
+$$ C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t $$
 
 와 같이 이전 cell state를 그대로 이어받으면서 필요한 정보만 조절한다.
 
@@ -269,7 +267,7 @@ $$
 > 
 > 특히 cell state 업데이트에서
 > 
->$$C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t$$
+> $$C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t$$
 > 
 > 처럼 **이전 상태를 곱하고 새로운 정보를 더하는(additive) 구조**를 사용한다.
 > 
@@ -401,7 +399,8 @@ Input gate는 **새로운 정보를 얼마나 반영할지** 결정한다.
 
 #### ② Candidate cell state
 
-# $$  
+# $$
+
 \tilde{C}_t
 
 \tanh(W_C[h_{t-1},x_t]+b_C)  
@@ -438,9 +437,7 @@ $\tilde{C}_t$는 실제로 cell state에 **새롭게 추가할 수 있는 후보
 
 앞에서 계산한 Forget gate와 Input gate의 결과가 여기서 실제로 합쳐진다.
 
-$$
-C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t
-$$
+$$ C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t $$
 
 이 식은 LSTM의 핵심 수식 중 하나이다.
 
@@ -467,22 +464,11 @@ $$
 
 #### ③ 두 정보를 더해서 새로운 기억 완성
 
-$$
-C_t =
-\underbrace{f_t \odot C_{t-1}}_{\text{기존 기억}}
-+
-\underbrace{i_t \odot \tilde{C}_t}_{\text{새로운 기억}}
-$$
+$$ C_t = \underbrace{f_t \odot C_{t-1}}_{\text{기존 기억}} + \underbrace{i_t \odot \tilde{C}_t}_{\text{새로운 기억}} $$
 
 즉, cell state는 다음 순서로 변한다.
 
-$$
-C_{t-1}
-\overset{\odot f_t}{\longrightarrow}
-\text{기존 기억 정리}
-\overset{+\;i_t \odot \tilde{C}_t}{\longrightarrow}
-C_t
-$$
+$$ C_{t-1} \overset{\odot f_t}{\longrightarrow} \text{기존 기억 정리} \overset{+;i_t \odot \tilde{C}_t}{\longrightarrow} C_t $$
 
 > [!question]+ LSTM의 기억 업데이트를 한 문장으로 이해하면
 > 
@@ -500,7 +486,8 @@ LSTM은 Output gate를 이용하여 **현재 시점에서 cell state 중 어떤 
 
 #### ① Output gate 계산
 
-# $$  
+# $$
+
 o_t
 
 \sigma(W_o[h_{t-1},x_t]+b_o)  
@@ -522,7 +509,8 @@ cell state의 값을 $-1\sim1$ 범위로 변환한다.
 
 #### ③ Output gate와 곱하기
 
-# $$  
+# $$
+
 h_t
 
 o_t*\tanh(C_t)  
@@ -693,7 +681,7 @@ $$
 > $$\tilde{C}_t=\tanh(W_C[h_{t-1},x_t]+b_C)$$
 > 
 > Cell state:  
-> $$C_t=f_t_C_{t-1}+i_t_\tilde{C}_t$$
+> $$C_t = f_t \odot C_{t-1} + i_t \odot \tilde{C}_t$$
 > 
 > Output:  
 > $$o_t=\sigma(W_o[h_{t-1},x_t]+b_o)$$
@@ -707,6 +695,551 @@ $$
 
 ---
 
+## 2. 자연어 생성 모델 (Seq2Seq, Attention)
+
+> [!info] 학습 목표
+> 
+> - 언어 모델의 개념과 역할을 설명할 수 있다
+> - 언어 모델이 문맥을 바탕으로 단어의 확률을 예측하는 방식을 이해한다
+> - Seq2Seq 구조의 기본 아이디어(인코더-디코더)를 설명할 수 있다
+> - Attention 메커니즘의 개념과 필요성을 설명할 수 있다
+
+> [!question] 이 단원에서 답할 질문
+> 
+> 1. 언어 모델이란 무엇일까? — 언어 모델의 정의와 역할 / 단어 예측을 통한 문맥 이해
+> 2. Seq2Seq은 어떻게 작동할까? — 인코더-디코더 구조 / 입력과 출력 길이가 다른 시퀀스 처리
+> 3. Attention은 왜 필요할까? — Bottleneck problem 해결 / 중요한 단어에 집중하는 메커니즘
+
+### 2.1 언어 모델(Language Model)이란
+
+#### 언어모델이란
+
+- 인간이 자연어를 생성하는 능력을 모방한 모델
+- 핵심 아이디어: **모든 가능한 유한한 단어 시퀀스에 확률을 부여**하여 문장의 자연스러움을 측정
+    - 예: "It was the best of times, it was the worst of times" 같은 자연스러운 문장 → 높은 확률
+    - 문법에 맞지 않는 나열 → 낮은 확률
+
+#### 문장 확률을 조건부 확률의 곱으로 분해
+
+$$p(w_1,w_2,\ldots,w_N) = p(w_1),p(w_2|w_1),p(w_3|w_1,w_2)\times\cdots\times p(w_N|w_1,\ldots,w_{N-1})$$
+
+- 문장 전체 확률을 한 번에 구하지 않고, "이전 단어들이 주어졌을 때 다음 단어가 나올 확률(**conditional probability**)"을 순서대로 곱해서 계산
+- 예(Sentence: "the cat sat on the mat"): $$P(\text{the cat sat on the mat}) = P(\text{the})*P(\text{cat}|\text{the})*P(\text{sat}|\text{the cat})*P(\text{on}|\text{the cat sat})*P(\text{the}|\text{the cat sat on})*P(\text{mat}|\text{the cat sat on the})$$
+
+> [!question]+ 이 수식에서 "Implicit order"가 의미하는 것
+> 
+> 각 조건부 확률 $p(w_k|w_1,\ldots,w_{k-1})$은 **오직 이전 단어들만 보고 다음 단어를 예측**하는 구조이다. 즉 문장 확률을 분해하는 수식 자체에 "단어는 순서대로, 이전 문맥에 의존해서 나온다"는 순차적 데이터의 성질(1.2에서 다룬 순서의 중요성)이 이미 내재되어 있다.
+> 
+> → 언어모델은 결국 **"이전 문맥이 주어졌을 때 다음 단어를 예측하는 문제"를 문장 끝까지 반복해서 푸는 것**과 같다.
+
+#### 일상 속의 언어모델
+
+- 스마트폰 키보드의 다음 단어 추천: "I'll meet you at the" → `cafe / airport / office`
+- 구글 검색 자동완성: "what is the" → `the weather`, `the meaning of life`, ...
+- 둘 다 내부적으로 $p(w_N|w_1,\ldots,w_{N-1})$을 계산해서 확률이 높은 후보를 보여주는 것
+
+#### N-gram 언어모델
+
+- **n-gram**: 연속된 n개의 단어 묶음
+    - unigram(1개): "The", "students", "opened", "their"
+    - bigram(2개): "The students", "students opened", "opened their"
+    - trigram(3개), four-gram(4개)도 동일한 방식으로 구성
+- 다양한 n-gram이 코퍼스(말뭉치)에서 얼마나 자주 등장하는지 통계(빈도)를 수집해서 다음 단어를 예측
+
+**계산 방식** (4-gram 예시, 직전 3개 단어만 사용): $$P(w \mid \text{students opened their}) = \frac{\text{count}(\text{students opened their } w)}{\text{count}(\text{students opened their})}$$
+
+- 코퍼스에서 "students opened their" 1000번 등장, 그 중 "students opened their books" 400번 → $P(\text{books}|\ldots)=0.4$
+- "students opened their exams" 100번 등장 → $P(\text{exams}|\ldots)=0.1$
+
+> [!question]+ N-gram 언어모델의 구조적 한계 — 왜 "직전 몇 개"만 보는가, 그리고 무엇을 놓치는가
+> 
+> N-gram 언어모델은 앞의 조건부 확률 분해식 $p(w_N|w_1,\ldots,w_{N-1})$을 그대로 쓰지 않고, **"직전 n-1개 단어만 본다"고 근사(approximation)**한 것이다. 예를 들어 4-gram이면 아무리 앞에 "as the proctor started the clock,"처럼 중요한 맥락(시험 상황이라는 단서)이 있어도, 그 부분은 계산에서 완전히 배제되고 오직 직전 3개 단어("students opened their")만 사용해서 다음 단어를 예측한다.
+> 
+> **왜 이런 근사가 필요한가**: 문장 전체 맥락을 다 반영하려 하면, 조건부의 조합이 문장이 길어질수록 기하급수적으로 다양해져서 코퍼스에서 그 조합이 등장한 횟수를 셀 수 있을 만큼 충분히 관측되기 어렵다(데이터 희소성). 그래서 "직전 n-1개만 본다"고 범위를 제한해 통계를 셀 수 있게 만든 것.
+> 
+> **대가**: 문맥을 다 기억하는 대신 계산 가능하게 단순화했기 때문에, n-gram 범위를 벗어난 먼 과거 정보는 애초에 확률 계산에 반영되지 않는다. 이는 RNN/LSTM이 풀고자 했던 **장기 의존성(long-term dependency)** 문제를 아예 "포기하고 잘라낸" 것과 같은 맥락이다. RNN/LSTM은 (기울기 소실이라는 대가를 치르더라도) 모든 과거 정보를 hidden state·cell state로 이어받으려 한 반면, n-gram은 애초에 그 범위 밖의 정보를 반영할 방법 자체가 없다.
+
+#### 언어모델 활용 예시: Statistical Machine Translation (SMT)
+
+- 1990년 ~ 2010년대 기계번역은 통계적으로 접근(SMT)
+- 목표: 한국어 문장 $x$가 주어졌을 때 가장 적절한 영어 문장 $y$를 찾기 $$\text{argmax}_y, P(y|x)$$
+- Bayes rule을 이용해, 식을 **번역모델**과 **언어모델** 두 부분으로 분리: $$\text{argmax}_y, P(y|x) = \text{argmax}_y, \underbrace{P(x|y)}_{\text{번역모델}}\underbrace{P(y)}_{\text{언어모델}}$$
+    - **번역모델** $P(x|y)$: 단어/구가 어떻게 번역되어야 하는지 모델링 → (한국어, 영어) 병렬 코퍼스로 학습
+    - **언어모델** $P(y)$: 유창한 영어 문장을 쓰는 방법을 모델링 → 영어 데이터만으로 학습
+
+> [!question]+ 왜 번역을 굳이 두 개의 모델(번역모델·언어모델)로 쪼개는가
+> 
+> $P(y|x)$를 통째로 하나의 모델로 학습하려면, "한국어 문장에 대응하는 자연스러운 영어 문장"을 한 번에 다뤄야 하는데, 이는 번역의 **정확성**(단어가 올바르게 옮겨졌는가)과 문장의 **유창함**(영어답게 자연스러운가)이라는 서로 다른 두 기준이 뒤섞인 문제다.
+> 
+> Bayes rule로 $P(y|x) \propto P(x|y)P(y)$로 분리하면:
+> 
+> - $P(x|y)$(번역모델)는 "단어/구 대응"에만 집중 → (한국어, 영어) **병렬** 코퍼스가 필요
+> - $P(y)$(언어모델)는 "영어다운 문장인가"에만 집중 → 영어 **단일** 코퍼스만 있어도 학습 가능
+> 
+> → 두 문제를 분리하면 각각 더 단순한 모델로 풀 수 있고, 특히 언어모델 쪽은 구하기 훨씬 쉬운 단일 언어 텍스트만으로 학습할 수 있어 데이터 확보 부담이 크게 줄어든다.
+
+#### SMT의 한계
+
+- 구조적으로 복잡하고, 많은 수작업이 필요
+- 언어쌍마다 별도의 자원(정렬 규칙, 사전 등)을 구축해야 함
+- → 유지·확장에 어려움 존재
+
+→ 이런 한계로 인해, 이후의 기계번역 연구는 **Neural Machine Translation(NMT)**으로 넘어가게 됨 (NMT의 대표적 구조가 다음에 배울 **Seq2Seq**)
+
+### 2.2 Seq2Seq: 인코더-디코더 구조
+
+#### Neural Machine Translation(NMT)이란
+
+- NMT: 인공 신경망을 이용해 기계 번역을 수행하는 방법. 2014년 등장하며 이후 통계 기반 번역(SMT)을 대체
+- 이때 사용되는 신경망 구조를 **sequence-to-sequence (Seq2Seq)**라 하며, **두 개의 RNN(LSTM)**으로 이루어짐
+- 2014년 Google의 논문 "Sequence to Sequence Learning with Neural Networks"(Sutskever et al.)에서 처음 소개됨
+
+#### Translation이 어려운 이유
+
+- 번역 문제는 **입력과 출력의 길이가 다를 수 있음**
+    - 영어: "the black cat drank milk" (5개 단어)
+    - 프랑스어: "le chat noir a bu du lait" (7개 단어)
+- → 따라서 NMT에서는 길이가 다른 시퀀스 간의 매핑을 처리할 수 있어야 함
+
+#### Seq2Seq의 아이디어
+
+- 2개의 LSTM을 사용
+    - **Encoder**: 입력 시퀀스를 한 타임스텝씩 읽어 고정된 차원의 큰 벡터 표현을 얻음
+    - **Decoder**: 앞에서 얻은 벡터로부터 출력 시퀀스를 생성
+
+#### Seq2Seq Architecture
+
+- English encoder: `<SOS> the black cat drank milk <EOS>`를 순서대로 입력받아 $h_1,\ldots,h_7$을 생성
+- $F(h_1,\ldots,h_7) = h_7$: 인코더의 **마지막 hidden state**가 입력 문장 전체를 압축한 표현(Representation of English sentence)이 됨
+- French decoder: 이 압축된 벡터($h_7$)를 초깃값으로 받아 `<SOS>`부터 시작해 `le chat noir a bu du lait <EOS>`를 한 단어씩 순차적으로 생성
+
+> [!question]+ 디코더는 매 타임스텝마다 무엇을 입력으로 받는가 — Autoregressive 구조 이해하기
+> 
+> RNN 계열 모델은 매 시점 $x_t$를 입력받아 $h_t=f(h_{t-1},x_t)$를 계산한다(1.3 RNN 참고). 인코더는 이 $x_t$가 명확하다 — 원문 문장의 각 단어("the","black","cat",...)를 순서대로 넣으면 된다.
+> 
+> 그런데 디코더는 상황이 다르다. 디코더가 만들어야 하는 건 "아직 존재하지 않는" 번역 문장이기 때문에, 애초에 각 시점에 넣어줄 정해진 입력이 없다. 그래서 Seq2Seq 디코더는 **직전 시점에 자기 자신이 출력(예측)한 단어를 그대로 다음 시점의 입력 $x_t$로 재사용**한다 — 이런 구조를 **autoregressive(자기회귀적)**라 한다.
+> 
+> 흐름으로 보면:
+> 
+> 1. `<SOS>`를 입력받아 첫 단어 예측 → "le"
+> 2. 방금 예측한 "le"를 다음 스텝의 입력으로 넣어서 → 다음 단어 예측 → "chat"
+> 3. 다시 "chat"을 입력으로 넣어서 → 다음 단어 예측 → ...
+> 
+> **문제**: 학습 초반에는 모델이 서투르기 때문에 1번 스텝에서 "le" 대신 오답인 "chien"을 예측할 수 있다. 이 잘못된 예측이 그대로 2번 스텝의 입력으로 들어가버리면, 디코더는 "chien" 이후에 이어질 법한(원래 정답과는 무관한) 단어를 계속 생성하게 된다. 한 스텝의 오차가 다음 스텝의 입력 자체를 오염시키고, 그 오염된 입력이 또 다음 스텝을 오염시키는 식으로 **오차가 누적(compounding error)**되어 학습 신호가 매우 불안정해진다.
+> 
+> → 이 문제를 막기 위해 학습 시에는 모델의 예측 대신 **정답 단어를 강제로 다음 입력에 넣어주는 것**이 바로 아래의 Teacher Forcing이다.
+
+> [!question]+ 인코더 벡터에 이미 원문 정보가 있는데, 왜 디코더는 자기 출력을 또 입력으로 넣는가
+> 
+> **핵심: 두 정보는 역할이 다르다**
+> 
+> ||담당하는 정보|전달 방식|
+> |---|---|---|
+> |**인코더 벡터($h_7$)**|"무엇을 번역해야 하는가"(원문 내용)|딱 1회, 디코더 시작점에 전달|
+> |**디코더 자기 출력 재입력**|"지금까지 어디까지 번역했는가"|매 스텝마다 갱신되며 전달|
+> 
+> 번역 문장 생성도 결국 언어모델의 조건부 확률 구조(2.1)를 따른다: $$P(y_t \mid y_1,\ldots,y_{t-1},,x)$$
+> 
+> - $x$(원문) → 인코더 벡터가 담당
+> - $y_1,\ldots,y_{t-1}$(지금까지 만든 출력) → 인코더 벡터엔 없는 정보. 디코더가 자기 출력을 다시 입력으로 넣어야만 얻을 수 있음
+> 
+> "이 문장이 고양이에 관한 내용"이라는 정보만으로는 3번째 단어가 뭐가 와야 할지 알 수 없다. "le chat noir까지 이미 말했다"는 걸 알아야 "다음엔 동사가 와야겠다"는 판단이 가능하다.
+> 
+> **만약 이전 출력을 안 넣어주면**: 디코더가 매번 원문 요약 벡터만 보고 단어를 뽑으면, 자기가 방금 뭘 말했는지 모른 채 매 스텝 독립적으로 판단하게 됨 → 같은 단어 반복, 문법적으로 이어지지 않는 출력 등의 문제 발생 가능
+> 
+> → **인코더 벡터는 "무엇을"을 알려주고, 디코더의 자기 출력 재입력은 "어디까지 했는지"를 알려준다 — 겹치지 않는, 서로 보완하는 정보다.**
+
+#### Teacher Forcing
+
+- 학습 초반에는 모델의 예측 능력이 떨어져 학습이 불안정할 수 있음
+- **Teacher Forcing**: 모델이 스스로 예측한 단어 대신 **정답(ground truth) 단어를 디코더 입력으로 강제로 넣어줌**으로써 훨씬 안정적이고 빠르게 학습을 수행하는 방법
+- 한 스텝의 오류가 다음 스텝으로 전파되지 않아 학습이 안정화됨
+- 단, 정답을 알고 있는 **학습(training) 시에만** 사용 가능한 기법 → 실제 추론(inference) 시에는 정답이 없으므로 아래의 방법들을 사용
+
+#### Seq2Seq의 다양한 적용
+
+- Seq2Seq 구조는 기계번역 외에도 **"길이가 다른 시퀀스를 시퀀스로 변환"**하는 다양한 태스크에 적용 가능
+    - **요약**: 긴 길이의 문서를 읽고, 짧은 길이의 문장으로 요약된 텍스트를 출력
+    - **대화**: 사용자의 발화를 기반으로, 맥락에 맞는 대답(출력 텍스트)을 생성
+    - **코드 생성**: 자연어로 작성된 설명·명령어를 입력받아, 대응하는 프로그래밍 코드나 쿼리를 출력
+
+#### Seq2Seq 학습 — End-to-End 최적화
+
+- Seq2Seq 모델은 인코더와 디코더가 **하나의 통합 네트워크**로 연결되어 있음
+- 디코더에서 발생한 오차는 역전파 과정을 통해 입력을 처리한 인코더까지 전달되어, **전체 네트워크가 End-to-End로 동시에 최적화**됨
+
+#### 추론 시 토큰 출력 방법 ① Greedy Inference
+
+- 각 단계에서 **가장 확률이 높은 단어 하나만** 선택하는 방식
+- 한계: **되돌리기가 불가능**
+    - 예시: `le ___` → `le chien ___` → ... (오답이지만 되돌아갈 방법이 없음)
+
+> [!question]+ Greedy Inference의 한계 — "매 순간 최선"이 "문장 전체의 최선"은 아닌 이유
+> 
+> Greedy는 각 시점에서 지역적(local)으로 가장 확률 높은 단어만 선택한다. 하지만 문장 전체 확률은 각 단어 확률의 곱(2.1의 조건부 확률 곱 구조와 동일)이기 때문에, 특정 시점에서 살짝 낮은 확률의 단어를 선택하는 편이 이후 단어들과 결합했을 때 전체 문장 확률은 오히려 더 높을 수도 있다. Greedy는 매 순간 후보 하나만 남기고 나머지는 모두 버리기 때문에, 이런 **전역적으로 더 나은 경로를 애초에 탐색할 기회조차 갖지 못한다.**
+
+#### 추론 시 토큰 출력 방법 ② Beam Search
+
+- 매 단계마다 **k개의 가장 유망한 후보**를 동시에 유지
+    1. 매 단계마다 k개의 가장 유망한 후보 유지
+    2. 후보가 `<EOS>`에 도달하면 완성된 문장으로 리스트에 추가
+    3. `<EOS>` 문장이 충분히 모이면 탐색 종료
+    4. 각 후보들의 점수를 **로그 확률의 합**으로 구해 최종 선택
+
+> [!question]+ Beam Search에서 왜 "로그 확률의 합"으로 점수를 매기는가
+> 
+> 문장의 확률은 각 단어 확률의 곱 $P(w_1)\times P(w_2|w_1)\times\cdots$(2.1의 언어모델 확률 분해와 동일 구조)로 계산된다. 그런데 확률(0~1 사이 값)을 계속 곱하면 값이 기하급수적으로 작아져 컴퓨터가 정밀하게 표현하기 어려워진다(underflow). 로그를 취하면 $\log(ab)=\log a+\log b$이므로 곱셈이 덧셈으로 바뀌어, 값이 너무 작아지는 문제 없이 안정적으로 후보들의 점수를 계산·비교할 수 있다.
+> 
+> → Beam Search는 "매 순간 1등만 남기는" Greedy와 "가능한 모든 경우의 수를 다 보는" 완전탐색 사이의 절충안으로, k개의 후보를 유지해 오답 경로에 갇힐 위험을 줄이면서도 계산량은 감당 가능한 수준으로 유지한다.
+
+### 2.3 Attention: Bottleneck 문제를 해결하는 메커니즘
+
+#### Seq2Seq의 한계: Bottleneck Problem
+
+- 인코더는 입력 문장 전체를 **마지막 hidden state $h_7$ 하나**로 압축해서 디코더에 전달
+- 문장이 아무리 길어도 정보는 항상 **고정된 길이의 벡터 하나**에 담아야 함 → 문장이 길어질수록 압축해야 할 정보량은 늘어나는데 벡터 크기는 그대로라 정보 손실이 발생할 수 있음
+- 이를 **bottleneck problem**이라 함
+
+#### Attention의 인사이트
+
+- Attention은 디코더가 단어를 생성할 때, **인코더 전체 hidden state 중 필요한 부분을 직접 참조**할 수 있도록 함
+- 즉, 매 타임스텝마다 "어떤 단어/구절에 집중할지"를 가중치로 계산해 bottleneck 문제를 완화
+
+#### Attention의 동작 과정
+
+1. 디코더의 현재 hidden state($s_t$)와 인코더의 **모든** hidden state($h_1,\ldots,h_7$) 사이의 유사도 점수 $A(t,i)$를 각각 계산
+2. 이 점수들을 **softmax**에 통과시켜 확률분포(attention distribution)로 변환
+3. 이 분포를 가중치로 인코더 hidden state들을 **가중합**: $a_t=\sum_i \alpha_i^t h_i$ → 이 시점의 **context vector**
+
+- 이렇게 얻은 context vector $a_t$는 디코더의 현재 상태 $s_t$와 함께 그 시점의 출력 $y_t$를 예측하는 데 사용됨
+
+> [!question]+ Attention distribution(확률)이 디코더로 "그대로" 전달되는 게 아니라는 것 — 확률의 합 vs 가중합
+> 
+> $a_t=\sum_i\alpha_i^t h_i$라는 수식을 보고 "확률들의 합이 디코더로 전달된다"고 오해하기 쉽지만, 정확히는 **"확률(attention score)을 가중치로 삼아 인코더 벡터들을 섞은 새로운 벡터"**가 전달되는 것이다.
+> 
+> - $\alpha_1,\ldots,\alpha_n$ (attention distribution): 이 값들의 합은 항상 1(softmax 결과). 이건 "디코더가 지금 각 입력 단어를 얼마나 참고할지"의 **비율**일 뿐, 그 자체로는 아무 정보도 담고 있지 않다.
+> - $h_1,\ldots,h_n$ (인코더 hidden state): 각 입력 단어가 실제로 담고 있는 **내용**.
+> - $a_t=\alpha_1h_1+\alpha_2h_2+\cdots+\alpha_nh_n$: 비율($\alpha_i$)대로 내용($h_i$)을 섞어 만든 **새로운 벡터**. 만약 정말 확률들만 더한다면 결과는 그냥 숫자 1일 뿐이라 아무 의미가 없다.
+> 
+> **비유**: 확률은 "누구 말을 몇 % 믿을지"의 비율이고, $h_i$는 "각자가 실제로 아는 내용"이다. 디코더가 받는 건 비율의 합(100%)이 아니라, **그 비율대로 섞인 내용물(context vector)**이다.
+
+> [!question]+ Attention 분포가 매 타임스텝마다 다시 계산되는 이유
+> 
+> Attention은 디코더가 "le"를 만들 때와 "noir"를 만들 때 서로 다른 원문 부분에 집중한다(실제로 두 시점의 attention distribution 막대그래프 모양이 다르게 나타남). 각 출력 단어마다 필요한 원문 정보가 다르기 때문이다 — "le"(관사)를 만들 때 필요한 단서와 "noir"(형용사, "검은")를 만들 때 필요한 단서(원문의 "black")는 서로 다르다.
+> 
+> 그래서 Attention은 매 타임스텝 $t$마다 디코더의 현재 상태 $s_t$를 Query로 삼아, 인코더 전체를 처음부터 다시 훑어보며 "지금 이 단어를 만들려면 원문의 어디를 봐야 하나"를 새로 계산한다. 이는 Seq2Seq가 문장 전체를 $h_7$ 하나로 고정해서 넘겨주던 방식과 근본적으로 다른 지점이다 — attention에는 "한 번 압축해서 끝"이 아니라, "매번 다시 필요한 곳을 찾아가는" 동적인 참조 과정이 있다.
+
+#### Attention의 효과
+
+1. **NMT 성능 향상**: 디코더가 소스 문장 전체가 아닌, 필요한 부분에만 집중할 수 있기 때문
+2. **Bottleneck Problem 해결**: 디코더가 인코더의 모든 hidden states에 직접 접근할 수 있음
+3. **Vanishing Gradient Problem 완화**: 멀리 떨어진 단어도 직접 연결할 수 있게 해줌
+
+> [!question]+ Attention이 왜 기울기 소실 문제를 완화하는가
+> 
+> 1.3에서 다룬 RNN의 기울기 소실은, 역전파 시 오차 신호가 시점 하나씩을 거칠 때마다 작은 값이 반복적으로 곱해지면서 결국 0에 가까워지는 문제였다. 예컨대 인코더 첫 단어("the")의 정보가 디코더 마지막 단어까지 영향을 주려면, 원래 구조라면 인코더 내부의 여러 시점 + 디코더 내부의 여러 시점을 모두 순차적으로 거쳐야 했다.
+> 
+> Attention은 디코더의 각 시점이 인코더의 **모든 hidden state에 직접(하나의 연산으로) 접근**할 수 있게 해준다. 즉 "the"의 정보를 담은 $h_1$이 디코더 출력에 영향을 주기 위해 굳이 $h_2,h_3,\ldots,h_7$을 순서대로 거칠 필요 없이, attention의 가중합 계산을 통해 곧바로 연결된다. 역전파 때도 이 직접 연결된 통로를 통해 기울기가 중간 시점들을 거치지 않고 전달될 수 있어, 거리가 먼 단어 간에도 학습 신호가 소멸되지 않고 비교적 잘 전달된다.
+
+#### BLEU score로 본 Attention의 효과
+
+- **BLEU score**: 기계 번역의 출력이 사람 번역과 얼마나 비슷한지 평가하는 지표
+- **RNNenc**(attention 없이 고정 벡터만 사용): 문장 길이가 길어질수록 BLEU score가 급격히 하락
+- **RNNsearch**(attention 사용): 문장이 길어져도 BLEU score가 비교적 안정적으로 유지
+- → bottleneck problem이 실제 성능 저하로 이어짐을, attention이 이를 완화함을 실증적으로 보여주는 근거
+
+#### Attention의 효과: 해석 가능성(Interpretability)
+
+- Attention 분포를 시각화하면, decoder가 각 단어를 생성할 때 입력 문장의 어느 부분에 집중했는지 확인 가능
+- 즉 모델이 내부적으로 참고한 근거를 사람이 파악할 수 있음 → 모델의 의사결정 과정을 해석할 수 있는 단서
+
+#### Attention의 효과: 정렬(Alignment)
+
+- 전통적인 기계번역에서는 단어 alignment 모델을 **별도로 학습**해야 했음
+- Attention은 decoder가 필요한 입력 단어에 자동으로 집중하도록 학습되기 때문에, **별도 정렬 모델 없이도 단어와 단어 간의 매핑 관계를 자연스럽게 학습**함
+
+#### Attention의 일반화: Query와 Values
+
+- Seq2Seq에서 attention을 사용할 때, **각 decoder의 hidden state**와 **모든 encoder의 hidden states** 간의 관계를 **Query와 Values**의 관계로 볼 수 있음
+- 이 관점에서 Attention 과정을 일반화하면:
+    1. Query와 Values 사이 유사도 점수(score) 계산 (예: dot-product, multiplication, additive 등)
+    2. Softmax를 통해 확률 분포(attention distribution) 얻기
+    3. 분포를 이용해 values를 가중합 → context vector(attention output)
+
+**score 계산 방식**
+
+- **Dot product**: $h\cdot s$ — 단순 내적, 추가 학습 파라미터 없음
+- **Multiplicative**: $h^TWs$ — 학습 가능한 가중치 행렬 $W$를 사이에 끼워 유사도를 유연하게 학습
+- **Additive**: $v^T\tanh(W_hh+W_ss)$ — $h,s$를 각각 다른 가중치로 변환해 더하고 tanh로 비선형성을 준 뒤 벡터 $v$로 스칼라 점수화. 가장 유연하지만 계산량이 더 많음
+
+> [!question]+ Dot product / Multiplicative / Additive는 왜 모두 "유사도"를 계산하는 방법인가
+> 
+> 1.1에서 다룬 내적(dot product)의 의미를 떠올려보면, 두 벡터의 내적은 "두 벡터가 얼마나 같은 방향을 가리키는가"를 나타내는 값이었다. Query(디코더 상태)와 Value(인코더 hidden state)가 서로 관련된 정보를 담고 있을수록 벡터가 비슷한 방향을 가리키도록 학습되고, 따라서 내적(dot product) 값도 커진다 — 즉 dot product 방식은 이 성질을 그대로 이용해 "관련성이 높을수록 점수가 크다"는 유사도 점수를 얻는다.
+> 
+> Multiplicative와 Additive는 여기에 학습 가능한 가중치를 추가한 버전이다. Multiplicative($h^TWs$)는 벡터를 곧바로 곱하기 전에 행렬 $W$로 한 번 변환을 거치게 해서, 단순 내적보다 더 유연하게 "무엇이 유사한 것으로 취급될지"를 학습으로 조정할 수 있게 한다. Additive는 두 벡터를 각각 다른 가중치로 변환한 뒤 더하고 비선형(tanh)까지 거치므로 표현력이 가장 크지만, 그만큼 계산량과 학습할 파라미터도 늘어난다.
+> 
+> → 세 방식 모두 "Query와 Value의 관련성을 숫자 하나로 요약한다"는 목적은 같고, 다만 그 관련성을 얼마나 유연하게(=학습 가능한 파라미터를 얼마나 더 쓰는가) 계산하느냐에 차이가 있다.
+
+---
+
+## 3. Self-Attention과 Transformer
+
+> [!info] 학습 목표
+> 
+> - Transformer의 등장 배경과 필요성을 설명할 수 있다
+> - Self-Attention의 기본 개념과 동작 원리를 이해한다
+> - Transformer의 전체 구조(인코더·디코더 블록)를 설명할 수 있다
+
+### 3.1 Self-Attention
+
+#### RNN이 꼭 필요할까?
+
+- RNN은 정보를 **hidden state를 통해 순차적으로 전달**하며 순차적 의존성(sequential dependency)을 형성
+- 반면 Attention은 필요한 순간, **입력 전체에서 직접 정보를 전달**할 수 있음
+- → RNN이 하던 "정보 전달"을 Attention이 더 효율적으로 수행할 수 있다면, **굳이 recurrence(순환 구조)가 필요한가?**라는 질문에서 출발
+
+#### RNN의 한계점 1 — 장기 의존성
+
+- RNN은 왼쪽에서 오른쪽으로 순차적으로 전개되어, **멀리 떨어진 단어 쌍이 상호작용하려면 시퀀스 길이만큼의 단계**를 거쳐야 함
+- 단계가 길어질수록 기울기 소실/폭발 문제가 심해져 장기 의존성 학습이 어려움(1.3 참고)
+- RNN은 입력된 **선형 순서를 강하게 반영**하기 때문에, 언어의 비선형적 의존성을 잘 포착하지 못함
+    - 예: "그 책은 오랫동안 방치되어 먼지가 많이 쌓인 탓에… 매우 **더러웠다**" — "책"과 "더러웠다"는 문장 구조상 멀리 떨어져 있지만 의미상 강하게 연결됨
+- 상호작용에 필요한 단계 수 = **O(sequence length)**
+
+#### RNN의 한계점 2 — 병렬화
+
+- Forward pass와 Backward pass 모두 **시퀀스 길이만큼의 단계**가 필요
+- 각 시점의 계산이 이전 시점의 결과에 의존하는 **순차적 연산**이기 때문에 병렬화가 불가능
+- 병렬 연산에 강한 **GPU 활용을 어렵게** 만들어 대규모 데이터 학습에 비효율적
+
+#### Self-Attention의 등장
+
+- Attention은 각 단어의 표현을 **query**로 두고, **value 집합**으로부터 필요한 정보를 직접 불러와 결합(2.3 Query/Values 참고)
+- 이 Attention 메커니즘을 **encoder-decoder 간이 아니라, 한 문장 내부에서 적용**하면? → **Self-Attention**
+
+**Self-Attention의 장점**
+
+1. 순차적으로 처리해야 하는 연산 수가 시퀀스 길이에 따라 증가하지 않음
+2. 최대 상호작용 거리 = **O(1)** → 모든 단어가 각 층에서 직접 상호작용
+
+> [!question]+ Self-Attention이 왜 O(1)의 상호작용 거리를 갖는가 — RNN과의 결정적 차이
+> 
+> RNN에서 첫 단어와 마지막 단어가 상호작용하려면, 그 사이의 모든 시점을 순서대로 거쳐야 한다 — 즉 상호작용 거리가 시퀀스 길이에 비례(O(sequence length))한다.
+> 
+> 반면 Self-Attention은 특정 단어의 query를 **문장 내 모든 단어의 key와 한 번에** 비교해서 점수를 계산한다. 즉 몇 번째 단어든 상관없이, 단 한 층의 attention 계산만으로 문장 내 다른 모든 단어와 직접 연결된다. 중간 단어들을 순서대로 거칠 필요가 없으므로 상호작용 거리가 항상 상수(O(1))로 유지된다.
+> 
+> → 이 덕분에 앞서 다룬 RNN의 장기 의존성 문제(먼 단어일수록 기울기가 소실되는 문제)가 구조적으로 발생하지 않는다.
+
+#### Seq2Seq Attention vs Self-Attention
+
+- **Seq2Seq에서의 Attention**: Attention(**입력 문장** 내의 단어들 | **출력 문장** 내의 각 단어 "w") — 서로 다른 두 문장(원문↔번역문) 사이의 연결
+- **Self-Attention**: Attention(**문장 내의 다른 단어들** | **문장 내의 각 단어** "w") — **같은 문장 안에서** 단어끼리 서로 연결
+    - 예: "거기"가 같은 문장 안의 "카페"와 강하게 연결됨(같은 장소를 가리키는 관계를 스스로 포착)
+
+#### Self-Attention의 계산 과정
+
+1. **Q, K, V 생성**: 각 단어의 임베딩 $e$에 학습 가능한 가중치 행렬 $W^Q, W^K, W^V$를 각각 곱해 **query(q), key(k), value(v)** 벡터를 생성
+2. **Attention score 계산**: 특정 단어의 query를 문장 내 모든 단어의 key와 비교해 유사도 점수를 계산 (예: "어제"의 query vs 문장 내 모든 단어의 key → $a_1,\ldots,a_6$)
+3. **가중합으로 새로운 표현 생성**: $h_{\text{어제}} = a_1v_1+a_2v_2+a_3v_3+\cdots+a_6v_6$
+4. 이 과정을 **문장 내 모든 단어에 대해** 독립적으로(병렬로) 반복
+
+> [!question]+ 하나의 단어 임베딩이 왜 Q, K, V 세 가지로 나뉘는가
+> 
+> Seq2Seq attention에서는 query(디코더 상태)와 value(인코더 hidden state)가 애초에 서로 다른 시퀀스에서 나왔다. 그런데 Self-Attention은 **같은 문장의 단어들**끼리 서로를 참조해야 하므로, 하나의 단어 임베딩이 상황에 따라 세 가지 다른 역할을 동시에 수행해야 한다:
+> 
+> - **query(q)**: "나는 지금 어떤 정보를 찾고 있는가" — 질문하는 역할
+> - **key(k)**: "다른 단어가 나를 찾을 때, 나는 어떤 특징으로 검색되는가" — 검색당하는 역할
+> - **value(v)**: "실제로 내가 전달할 정보는 무엇인가" — 정보를 제공하는 역할
+> 
+> 같은 임베딩 $e$에 서로 다른 가중치 행렬($W^Q,W^K,W^V$)을 곱해 세 벡터를 따로 만드는 이유가 바로 이것이다. 하나의 벡터로 세 역할을 다 하게 하면 각 역할에 필요한 정보가 서로 얽혀버리지만, 별도의 학습 가능한 변환을 거치면 "질문하는 나"와 "검색당하는 나"와 "정보를 주는 나"를 각각 최적화된 형태로 분리해서 학습할 수 있다.
+
+> [!question]+ Self-Attention에서 각 단어의 Query와 Key에는 구체적으로 어떤 정보가 담기는가
+> 
+> Cross-Attention(2.3, 3.2)과 달리 Self-Attention은 인코더/디코더 구분이 없으므로, **모든 단어가 예외 없이 자기 자신의 query와 key를 둘 다 가진다.**
+> 
+> - **Query(질문하는 나)**: "나(이 단어)는 내 의미를 완성하기 위해 문장 속 다른 어떤 단어의 정보가 필요한가"를 담은 벡터. 예: "거기"의 query는 대략 "나는 장소를 가리키는 말인데, 이 문장에서 어떤 장소를 나타내는 거지? 그 단서를 줄 단어를 찾고 싶어" 같은 방향으로 학습됨
+> - **Key(검색당하는 나)**: "나(이 단어)는 다른 단어가 나를 찾으러 올 때 어떤 특징으로 식별되는가"를 담은 벡터. 예: "카페"의 key는 대략 "나는 장소를 나타내는 명사야" 같은, 다른 단어의 query와 매칭될 만한 특징을 담게끔 학습됨
+> 
+> 다만 $W^Q,W^K$는 사람이 "장소면 이 숫자" 식으로 설계한 게 아니라 번역/생성 등 downstream 과제를 잘 풀도록 역전파로 학습된 가중치이므로, q·k 벡터의 각 숫자 하나하나가 무엇을 뜻하는지는 사람이 직접 짚어 말할 수 없다. 다만 결과적으로 **"문법적·의미적으로 관련된 단어끼리는 query·key의 내적이 커지도록"** 학습이 수렴한다는 것만 알 수 있다 — 3.2의 Multi-Head Attention 시각화(Head 1은 문맥적 관계, Head 2는 시제에 주목)가 이런 학습 결과를 사후적으로 관찰한 사례다.
+> 
+> **Self-Attention vs Cross-Attention 비교**
+> 
+> ||Query가 담는 것|Key가 담는 것|
+> |---|---|---|
+> |Self-Attention|"나(이 단어)는 같은 문장의 어떤 단어 정보가 필요한가"|"나(이 단어)는 어떤 특징으로 검색되는가" — **같은 단어가 둘 다 가짐**|
+> |Cross-Attention|"디코더는 지금 원문의 어떤 정보가 필요한가"|"인코더의 이 단어는 어떤 특징을 갖고 있는가" — **서로 다른 시퀀스**|
+
+> [!question]+ 가중합으로 얻은 새로운 표현 $h$는 무엇을 의미하는가
+> 
+> $h_{\text{어제}} = a_1v_1+\cdots+a_6v_6$는 단순히 "어제"라는 단어 자체가 아니라, **문장 내 다른 단어들과의 관계까지 반영된 문맥적 표현(contextualized representation)**이다. attention score $a_i$가 클수록 그 단어의 value가 더 많이 반영되므로, 결과적으로 $h$는 "이 문장 안에서 나(어제)와 관련이 깊은 단어들의 정보를 가중치대로 섞어 담은 벡터"가 된다.
+> 
+> 실제로 "어제", "카페", "갔었어" 각각을 기준으로 계산한 attention score를 보면 대체로 **자기 자신에 대한 점수($a_i$)가 가장 크게** 나타나면서도, 문맥상 관련 있는 다른 단어에도 어느 정도 점수가 분산되어 있다. 이 과정을 문장의 모든 단어에 대해 독립적으로(=병렬로) 수행하면, 각 단어마다 "이 문장 안에서 나와 관련된 다른 단어들의 정보를 반영한" 새로운 표현이 만들어진다.
+
+#### Self-Attention 수식화 — Query, Key, Value
+
+앞서 다룬 Q, K, V 생성 및 attention 계산 과정을 수식으로 정리하면 다음과 같다.
+
+**① Q, K, V 벡터 생성**: 각 단어 $i$의 임베딩 $x_i$에 학습 가능한 가중치 행렬 $Q,K,V$를 각각 곱해 벡터를 생성 $$q_i=Qx_i\ (\text{query}) \qquad k_i=Kx_i\ (\text{key}) \qquad v_i=Vx_i\ (\text{value})$$
+
+**② Query와 Key 간 유사도 계산 후 softmax** $$e_{ij}=q_i^Tk_j \qquad \alpha_{ij}=\frac{\exp(e_{ij})}{\sum_{j'}\exp(e_{ij'})}$$
+
+- $e_{ij}$: 단어 $i$의 query와 단어 $j$의 key 사이의 유사도(내적) — 2.3의 dot-product score 방식과 동일한 형태
+- $\alpha_{ij}$: softmax로 정규화된 attention 가중치(합이 1)
+
+**③ Value의 가중합으로 출력 계산** $$o_i=\sum_j \alpha_{ij}v_j$$
+
+- 앞서 살펴본 $h_{\text{어제}}=a_1v_1+\cdots+a_6v_6$과 동일한 식을 인덱스 $i,j$로 일반화한 것
+
+#### Self-Attention의 한계
+
+Self-Attention은 단어 간 관계를 효율적으로 잡아내는 강력한 메커니즘이지만, 세 가지 한계가 존재한다.
+
+1. **순서 정보 부재**: 단어 간 유사도(내적)만 계산하기 때문에, 단어의 순서를 고려하지 않음
+2. **비선형성 부족**: Attention 계산은 본질적으로 가중 평균 연산이라는 **선형 결합**에 불과하기 때문에, 복잡한 패턴이나 깊은 표현력을 담기 어려움
+3. **미래 참조 문제**: 언어 모델은 시퀀스를 왼쪽에서 오른쪽으로 순차적으로 생성해야 하지만(2.1의 조건부 확률 구조), Self-Attention은 모든 단어를 동시에 보기 때문에 아직 생성되지 않아야 할 미래 단어를 참조해버림
+
+#### 한계 해결 1 — Positional Encoding
+
+- 순서 정보 부재 문제를 해결하기 위한 기법
+- 각 단어 위치 $i$를 나타내는 위치 벡터를 정의해, 단어 임베딩 값에 더해 최종 입력으로 사용
+- 두 가지 방법
+    - **Sinusoidal Position Encoding**: 서로 다른 주기의 사인/코사인 함수를 합성해 위치 벡터를 만드는 방법
+    - **Learned Absolute Position Embedding**: 위치 벡터를 모두 학습 파라미터로 설정해 학습 과정에서 데이터에 맞춰 최적화하는 방법
+
+#### 한계 해결 2 — Feed-Forward Network 추가
+
+- Self-Attention 연산은 비선형 변환이 없어 복잡한 패턴 학습에 한계가 있음
+- 각 단어 출력 벡터에 Feed-Forward Network(Fully Connected + ReLU 등)를 추가해, Self-Attention이 만든 표현을 깊고 비선형적인 표현으로 확장
+
+> [!question]+ Self-Attention과 Feed-Forward Network는 각각 어떤 역할을 나누어 맡는가
+> 
+> Self-Attention 출력 $o_i=\sum_j\alpha_{ij}v_j$은 결국 다른 단어들의 value를 **가중치 비율대로 섞은 것**일 뿐이다. 아무리 가중치($\alpha_{ij}$)가 복잡하게 계산되어도, value들을 합치는 연산 자체는 **선형 결합**이라 표현할 수 있는 패턴의 종류에 한계가 있다.
+> 
+> 그래서 self-attention 층 바로 위에 각 단어별로 독립적인 Feed-Forward Network(및 ReLU 같은 비선형 활성화 함수)를 얹는다. 즉 self-attention이 "문장 내 어떤 단어의 정보를 얼마나 가져올지"를 결정하는 역할을 맡고, 그 위의 FF 네트워크는 "가져온 정보를 비선형적으로 가공해 더 복잡한 표현으로 변환"하는 역할을 맡는 식으로 **역할을 분업**한다.
+
+#### 한계 해결 3 — Masked Self-Attention
+
+- 단어를 생성할 때는 한 단어씩 순차적으로 미래 단어를 예측해야 하지만, Self-Attention은 기본적으로 모든 단어(미래 포함)를 동시에 참조함
+- 해결책: Attention Score를 계산할 때, **미래 단어에 해당하는 항목을 $-\infty$로 설정**해 계산에 반영되지 않도록 함
+
+> [!question]+ Masked Self-Attention에서 왜 하필 $-\infty$로 설정하는가 — softmax와의 연결
+> 
+> 이는 softmax 공식 $\alpha_{ij}=\dfrac{\exp(e_{ij})}{\sum_{j'}\exp(e_{ij'})}$과 직접 연결된다. 여기에 $e_{ij}=-\infty$를 대입하면 $\exp(-\infty)=0$이 되어, 해당 위치의 attention 가중치 $\alpha_{ij}$가 정확히 0이 된다.
+> 
+> 가중치가 0이라는 건 곧 ③단계 가중합 $o_i=\sum_j\alpha_{ij}v_j$을 계산할 때 그 단어의 value가 **전혀 반영되지 않는다**는 뜻이다. 즉 "미래 단어를 아예 존재하지 않는 것처럼 취급"하는 효과를, 별도의 조건문 없이 attention score 계산 공식 안에서 자연스럽게 구현하는 방법이다.
+> 
+> **왜 하필 "$-\infty$"여야 하는가 — "0~1 범위 제한" 때문이 아니다**
+> 
+> 흔히 헷갈리는 지점인데, 이는 softmax 출력이 0~1 사이라는 일반적 성질 때문이 아니라 **지수함수가 $-\infty$를 정확히 0으로 만들어준다는 성질** 때문이다.
+> 
+> - 만약 $-\infty$ 대신 그냥 "아주 작은 음수"(예: $-1000$)를 쓰면, $\exp(-1000)$도 사실상 0에 가깝지만 수학적으로는 완전한 0이 아니다 — 아주 미세하게나마 그 단어의 정보가 가중합에 섞여 들어갈 수 있다.
+> - $-\infty$를 쓰면 $\exp(-\infty)=0$이 **이론적으로 정확히 0**이 되어, 해당 미래 단어의 value가 가중합 계산에서 **완전히, 확실하게 배제**된다. "거의 안 본다"가 아니라 "절대 못 본다"를 수학적으로 보장하는 방법인 것.
+
+#### Self-Attention 정리
+
+- Self-Attention은 문장 내 모든 단어가 서로 직접 상호작용하여, 1) 장거리 의존성을 효율적으로 포착하고 2) 병렬 처리를 가능하게 하는 메커니즘
+- 한계 해결 방법 총정리
+    1. **순서 정보 부재 → Positional Encoding**: 단어 임베딩만으로는 몇 번째 단어인지 알 수 없으므로, 위치 $i$를 나타내는 위치 벡터를 만들어 단어 임베딩에 더한 뒤 입력으로 사용(Sinusoidal / Learned 두 방식)
+    2. **비선형성 부족 → Feed-Forward Network 추가**: attention의 가중합 연산은 선형 결합에 불과해 복잡한 패턴을 표현하기 어려우므로, 각 단어 출력 벡터에 Fully Connected + ReLU 등을 추가해 비선형적으로 표현력을 확장
+    3. **미래 참조 문제 → Masked Self-Attention**: 언어 생성은 왼쪽에서 오른쪽으로 순차 진행되어야 하는데 Self-Attention은 모든 단어를 동시에 보므로, 미래 단어에 해당하는 attention score를 $-\infty$로 설정해(softmax 결과 0이 되어) 아예 참조되지 않도록 차단
+- 전체 구조를 쌓으면: $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Masked Self-Attention} \to \text{Feed-Forward}]\times N \to \text{Linear} \to \text{Softmax} \to \text{Probabilities}$$
+- 이 **"Masked Self-Attention + Feed-Forward를 한 블록으로 삼아 여러 번 쌓는 구조"**가 다음에 배울 **Transformer**의 핵심 구성 요소
+
+### 3.2 Transformer
+
+#### Attention Is All You Need
+
+- Transformer는 2017년 Google이 발표한 "Attention Is All You Need" 논문에서 처음 제안된 아키텍처
+- **Self-Attention을 핵심 메커니즘**으로 삼는 신경망 구조 (3.1에서 다룬 Self-Attention + Positional Encoding + Feed-Forward + Masking이 이 논문에서 정립된 개념)
+
+#### Transformer의 전체 구조
+
+- Seq2Seq처럼 **encoder-decoder 구조**로 설계됨
+    - **Encoder**: 입력 문장을 받아 의미적 표현으로 변환
+    - **Decoder**: 인코더의 표현과 지금까지 생성한 단어들을 입력받아 다음 단어를 예측
+- 이 중 **decoder가 언어 모델과 같은 방식으로 동작**함 (2.1의 조건부 확률 구조 $p(w_t|w_1,\ldots,w_{t-1})$를 masked self-attention이 그대로 구현)
+
+#### Multi-Headed Attention
+
+- 같은 단어라도 문법적 관계, 의미적 맥락 등 **여러 이유로 다른 단어에 주목**할 수 있음
+- 단일 Self-Attention Head로는 **한 가지 관점**에서의 단어 간 관계만 파악 가능
+- → 여러 개의 Attention Head를 두어 **다양한 관점에서 동시에** 정보를 파악
+    - Head 1: 단어의 문맥적 관계에 주목
+    - Head 2: 단어의 시제에 주목
+    - Head 3: 명사에 주목
+- 각 head는 서로 다른 $W^Q,W^K,W^V$를 학습하기 때문에, 같은 단어를 query로 삼아도 head마다 attention 분포가 다르게 나타남
+
+#### Scaled Dot Product
+
+- Query와 Key의 **차원이 커질수록, 두 벡터의 내적 값도 자연스럽게 커짐**
+- 내적 값이 너무 크면 softmax 출력이 지나치게 뾰족해져(하나의 값만 1에 가깝고 나머지는 0에 가까움), 미세한 변화에도 큰 차이가 발생하고 **gradient vanishing** 문제가 생길 수 있음
+    - 예: $\text{softmax}([40,50,45]) \approx [0.000045,\ 0.99326,\ 0.00669]$
+- 해결책: 내적 값을 그대로 쓰지 않고 $\sqrt{d/h}$로 나눠 스케일 조정 $$\text{output}_l = \text{softmax}\left(\frac{XQ_lK_l^TX^T}{\sqrt{d/h}}\right)*XV_l$$
+    - 같은 예시를 8로 나누면: $\text{softmax}([5.00,6.25,5.625]) \approx [0.1573,\ 0.5489,\ 0.2938]$
+- 이렇게 하면 값이 안정적으로 분포되어 학습이 훨씬 더 빠르고 안정적으로 진행됨
+
+> [!question]+ 왜 차원이 커지면 내적 값도 커지고, 그게 왜 문제가 되는가
+> 
+> 내적은 각 차원의 값을 곱해서 더하는 연산이다($q\cdot k=\sum_i q_ik_i$). 차원 수 $d$가 늘어나면 더해지는 항의 개수도 늘어나므로, 각 항이 평균적으로 비슷한 크기를 가진다고 가정할 때 내적 값의 절댓값(정확히는 분산)이 차원 수에 비례해서 커지는 경향이 있다.
+> 
+> 문제는 이 커진 내적 값이 그대로 softmax의 입력으로 들어간다는 것이다. softmax는 입력 값들의 차이를 지수적으로 증폭시키는 함수이기 때문에, 입력 값 자체가 크면(예: 40,50,45) 값들 사이의 상대적 차이도 함께 커져서 출력이 거의 원-핫에 가까운 극단적인 분포가 되어버린다(0.99326처럼 하나에 쏠림). 이렇게 극단적으로 뾰족한 분포에서는 대부분의 출력 항이 거의 0이나 1에 붙어버려, 역전파 시 그 항들의 기울기도 거의 0이 되어(포화 상태) 학습 신호가 사라진다 — 이것이 gradient vanishing이다.
+> 
+> $\sqrt{d/h}$로 나누는 것은 이 "차원이 커질수록 값도 커지는" 통계적 경향을 미리 상쇄해서, softmax 입력이 적당한 범위 안에 머물도록(=출력이 지나치게 뾰족해지지 않도록) 조정하는 정규화다.
+
+#### Residual Connection
+
+- 깊은 신경망은 층이 깊어질수록 학습이 어려워짐(gradient vanishing/exploding)
+- 단순히 layer의 출력만 사용하면 정보가 소실될 수 있음 → layer가 전체를 예측하는 대신, **기존 입력과의 차이(잔차)만 학습**하도록 하는 residual connection을 사용 $$X^{(i)} = X^{(i-1)} + \text{Layer}(X^{(i-1)})$$
+- residual이 없으면 손실 지형(loss landscape)이 매우 울퉁불퉁해 학습이 어렵고, residual을 쓰면 훨씬 매끄러워져 학습이 안정적임
+
+> [!question]+ 왜 "전체를 예측"하는 대신 "차이(잔차)만 학습"하면 더 쉬워지는가
+> 
+> Layer가 $X^{(i-1)}$을 입력받아 $X^{(i)}$ 전체를 처음부터 새로 만들어내야 한다면, 층이 깊어질수록 각 층은 "지금까지의 모든 정보를 잃지 않고 다음 층으로 정확히 전달"하는 부담까지 함께 져야 한다. 조금이라도 정보를 잘못 변환하면 뒤 층으로 갈수록 오차가 누적된다.
+> 
+> 반면 $X^{(i)}=X^{(i-1)}+\text{Layer}(X^{(i-1)})$처럼 **입력을 그대로 다음 층까지 직접 이어주는 통로(identity shortcut)**를 만들어두면, Layer는 "입력을 얼마나 바꿔야 하는가(잔차)"만 학습하면 된다. 극단적으로 Layer가 아무것도 학습하지 못해 출력이 0이더라도, $X^{(i)}=X^{(i-1)}$이 되어 최소한 입력 정보는 그대로 보존된다. 즉 "정보를 보존하는 것"이 기본값이 되고 그 위에 "필요한 만큼만 수정"하는 것이 학습 목표가 되므로 훨씬 안정적으로 최적화된다.
+> 
+> 이는 3.1(및 1.3)에서 다룬 기울기 소실 문제와도 연결된다. Residual connection의 덧셈 경로는 역전파 시 기울기가 그대로(1의 비율로) 전달될 수 있는 지름길을 제공하기 때문에, 층이 아무리 깊어져도 기울기가 소실되지 않고 앞쪽 층까지 잘 전달된다.
+
+#### Layer Normalization
+
+- 층이 깊어질수록 hidden vector 값들이 커졌다 작아졌다 하며 학습이 불안정해질 수 있음
+- **각 레이어 단위에서 hidden vector 값을 정규화**해 안정적이고 빠른 학습을 도움
+- Residual Connection + Layer Normalization을 합쳐 그림에서는 **"Add & Norm"** 블록으로 표시됨
+
+#### Decoder 블록 구조
+
+- Transformer의 decoder는 여러 개의 decoder 블록을 쌓아 만든 구조. 각 블록은:
+    1. **Masked Self-Attention (Multi-Head)**: 미래 단어를 보지 않도록 마스크를 씌운 Multi-Head Self-Attention
+    2. **Add & Norm** (Residual Connection + Layer Normalization)
+    3. **Feed-Forward Network**: 각 위치별 비선형 변환
+    4. **Add & Norm** (Residual Connection + Layer Normalization)
+- → 언어 모델처럼 **단방향 문맥만 활용**
+
+#### Encoder 블록 구조
+
+- Transformer의 encoder는 **양방향 문맥을 모두 활용** 가능 (입력 문장 전체를 의미적 표현으로 변환하는 게 목적이므로 미래를 가릴 이유가 없음)
+- 각 단어가 문장 내 앞뒤 모든 단어를 반영한 벡터로 인코딩됨
+- **Decoder와의 차이는 Self-Attention에서 masking을 제거한 것뿐**
+
+#### Encoder-Decoder 연결: Cross-Attention
+
+- 기계 번역에서 Seq2Seq이 그랬듯, Transformer도 **이해를 위한 encoder**와 **생성을 위한 decoder**로 이뤄진 encoder-decoder 구조를 채택
+- decoder는 단순 Self-Attention만 하는 것이 아니라, encoder의 출력 표현을 참조하는 **Cross-Attention**을 추가로 수행해 입력과 출력을 연결
+- Cross-Attention의 특징: Self-Attention과 다르게, **Query는 decoder에서, Key와 Value는 encoder에서** 가져옴
+
+> [!question]+ Cross-Attention은 2.3의 Seq2Seq Attention과 어떻게 연결되는가
+> 
+> 2.3에서 다룬 Seq2Seq Attention은 디코더의 hidden state를 Query로, 인코더의 모든 hidden state를 Key/Value로 삼아 "디코더가 원문 중 필요한 부분을 참조"하는 구조였다. Transformer의 Cross-Attention은 이 아이디어를 그대로 가져오되, 이번 단원에서 다진 정교한 도구들(별도로 학습된 $W^Q,W^K,W^V$, Scaled Dot-Product, Multi-Head)로 구현한 버전이다.
+> 
+> 핵심은 동일하다 — **Query는 "지금 무엇이 필요한가"를 묻는 디코더 쪽에서, Key와 Value는 "참조 가능한 원문 정보"를 담은 인코더 쪽에서** 나온다는 것. 다만 Self-Attention(같은 문장 내부에서 Q,K,V가 모두 나옴)과 달리, Cross-Attention은 Q의 출처와 K,V의 출처가 서로 다른 시퀀스(디코더 vs 인코더)라는 점이 구분점이다.
+
+---
+
 ## 다음에 정리할 내용
 
-- [ ] 1.4 LSTM
+- [x] 1.4 LSTM
+- [x] 2.1 언어 모델(Language Model)
+- [x] 2.2 Seq2Seq (인코더-디코더)
+- [x] 2.3 Attention (Bottleneck problem, 집중 메커니즘)
+- [x] 3.1 Self-Attention
+- [x] 3.2 Transformer (인코더·디코더 블록 구조)
