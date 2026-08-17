@@ -119,6 +119,12 @@
 - 정의: 데이터가 입력되는 **순서**와, 그 순서를 통해 입력되는 데이터들 **사이의 관계**가 중요한 데이터
 - 예시: **오디오**(시간 순서대로 이어진 파형 조각) / **텍스트**(단어들이 순서대로 나열, 예: Natural-Language-Process) / **비디오**(시간 순서대로 이어진 프레임)
 
+> [!question]+ "시퀀스(Sequence)"란 정확히 무엇인가
+> 
+> **시퀀스 = 순서가 정해진 요소들의 나열**. 그냥 여러 개가 모인 집합(set)과 다르게, **몇 번째에 무엇이 오는지가 의미를 결정**한다는 게 핵심 — 위에서 정의한 "순차적 데이터"를 부르는 이름이 곧 시퀀스다.
+> 
+> 예: 문장 "나는 너를 사랑해"는 `[나는, 너를, 사랑해]`라는 단어들의 시퀀스. 앞으로 문서 전반에서 나오는 "입력 시퀀스"(번역할 원문 단어들의 나열), "출력 시퀀스"(번역된 단어들의 나열), "시퀀스 길이"(그 나열에 포함된 요소 개수) 같은 표현은 전부 이 정의를 그대로 사용하는 것
+
 #### 순차적 데이터의 3가지 특징
 
 1. **순서가 중요하다**: 데이터 순서가 바뀌면 의미가 달라짐. 예: "나는 너를 사랑해" ≠ "너는 나를 사랑해"
@@ -183,6 +189,18 @@
 - **펼쳐서(unrolled) 보면 각 층이 하나의 시점을 나타내는 깊은 신경망처럼 보임** — "가중치를 공유하는 특별한 Deep network"라고 볼 수 있음
 - hidden state를 유지하면서 가변 길이 데이터 처리 가능
 - 출력이 과거 입력에 영향을 받는다는 점이 feedforward 신경망과의 결정적 차이
+
+> [!question]+ RNN "셀(Cell)"이란 정확히 무엇이고, 역전파는 어떻게 이루어지는가
+> 
+> **셀의 구조**: RNN 셀 하나는 입력층-은닉층 1개-출력층으로 구성된 Shallow network와 사실상 같은 구조다. $x_t$와 $h_{t-1}$을 입력으로 받아 은닉층 1개($h_t=\tanh(W_{hh}h_{t-1}+W_{xh}x_t)$)를 거쳐 출력층($y_t=W_{hy}h_t$)까지 계산하는 하나의 계산 블록. 위에서 "층(layer)"이라 표현한 것과 "셀"은 같은 대상을 가리키는 다른 용어일 뿐이다.
+> 
+> **언롤링 = 같은 셀의 반복 실행**: 언롤링은 셀이 여러 개 새로 생기는 게 아니라, **가중치가 동일한 셀 하나가 시점 수만큼 반복 실행**된 것을 시간 축으로 펼쳐 그린 것이다. `for`문으로 같은 함수를 seq_len번 호출하는 것과 같은 구조.
+> 
+> **역전파(BPTT, Backpropagation Through Time)**: 가중치는 1개로 공유되지만, 언롤링된 계산 그래프에는 그 셀이 시점 수(T)만큼 등장한다. 역전파는 "셀 1개 단위"로 딱 한 번만 이루어지는 게 아니라, **T개의 셀 인스턴스 각각에서** 국소 기울기를 계산한 뒤, 같은 가중치가 여러 곳에서 쓰였으므로 연쇄법칙에 따라 **그 T개의 기울기를 모두 더해** 최종 기울기로 사용한다:
+> 
+> $$\frac{\partial L}{\partial W_h}=\sum_t \frac{\partial L}{\partial W_h}\bigg|_t$$
+> 
+> → 이는 아래 "기울기 소실" 설명(매 시점마다 작은 값이 반복 **곱해져서** 기울기 값 자체가 작아짐)과는 다른 지점을 짚는 내용이다: 기울기 소실 = "그 기울기 값이 왜 작아지는가", 위 합산 = "공유 가중치의 최종 기울기가 어떻게 만들어지는가" — 서로 보완적인 설명
 
 #### RNN의 한계: 기울기 소실(Vanishing Gradient) 문제
 
@@ -792,6 +810,7 @@ $$p(w_1,w_2,\ldots,w_N) = p(w_1),p(w_2|w_1),p(w_3|w_1,w_2)\times\cdots\times p(w
 
 - NMT: 인공 신경망을 이용해 기계 번역을 수행하는 방법. 2014년 등장하며 이후 통계 기반 번역(SMT)을 대체
 - 이때 사용되는 신경망 구조를 **sequence-to-sequence (Seq2Seq)**라 하며, **두 개의 RNN(LSTM)**으로 이루어짐
+    - 두 개의 RNN = **인코더 셀 1개 + 디코더 셀 1개**. 각 셀은 자기 구간(인코더/디코더) 안에서만 시점마다 재사용되며, 인코더와 디코더는 서로 다른 가중치를 씀(공유 안 함)
 - 2014년 Google의 논문 "Sequence to Sequence Learning with Neural Networks"(Sutskever et al.)에서 처음 소개됨
 
 #### Translation이 어려운 이유
@@ -812,6 +831,19 @@ $$p(w_1,w_2,\ldots,w_N) = p(w_1),p(w_2|w_1),p(w_3|w_1,w_2)\times\cdots\times p(w
 - English encoder: `<SOS> the black cat drank milk <EOS>`를 순서대로 입력받아 $h_1,\ldots,h_7$을 생성
 - $F(h_1,\ldots,h_7) = h_7$: 인코더의 **마지막 hidden state**가 입력 문장 전체를 압축한 표현(Representation of English sentence)이 됨
 - French decoder: 이 압축된 벡터($h_7$)를 초깃값으로 받아 `<SOS>`부터 시작해 `le chat noir a bu du lait <EOS>`를 한 단어씩 순차적으로 생성
+
+> [!question]+ 컨텍스트 벡터(Context Vector)란 — 2.3 Attention의 context vector와 구분 주의
+> 
+> 위에서 말한 "인코더의 마지막 hidden state($h_7$)"를 **컨텍스트 벡터**라고도 부른다: $c = h_enc_last$. 인코더가 입력 문장을 끝까지 다 읽고 남긴 최종 은닉 상태로, 입력 문장 전체의 문맥 의미가 여기에 압축되어 담기며, 디코더가 번역을 시작하는 "최초의 기억"으로 딱 1회 전달된다.
+> 
+> **주의**: 같은 "context vector"라는 이름이 뒤에 나올 **2.3 Attention에서는 다른 것**을 가리킨다.
+> 
+> ||정의|계산 시점|
+> |---|---|---|
+> |**기본 Seq2Seq의 컨텍스트 벡터**(여기)|인코더의 **마지막 hidden state 하나**($h_7$)|디코더 시작 전 **1번만** 계산, 이후 고정|
+> |**Attention의 context vector**(2.3)|인코더 **모든** hidden state($h_1,\ldots,h_7$)를 attention 가중치로 **가중합**한 것: $a_t=\sum_i \alpha_i^t h_i$|디코더가 단어를 만들 **매 시점마다** 새로 계산|
+> 
+> 기본 Seq2Seq은 문장 전체 정보를 고정된 벡터 하나에 욱여넣어야 해서 문장이 길어질수록 정보 손실이 발생하는데(**bottleneck problem**), 이 한계를 해결하기 위해 등장한 것이 Attention의 context vector다. 이름은 같지만 "고정된 벡터 하나" vs "매 스텝 새로 계산되는 가중합 벡터"라는 근본적으로 다른 개념이므로 혼동하지 않아야 한다.
 
 > [!question]+ 디코더는 매 타임스텝마다 무엇을 입력으로 받는가 — Autoregressive 구조 이해하기
 > 
@@ -1039,7 +1071,7 @@ $$p(w_1,w_2,\ldots,w_N) = p(w_1),p(w_2|w_1),p(w_3|w_1,w_2)\times\cdots\times p(w
 #### Self-Attention의 계산 과정
 
 1. **Q, K, V 생성**: 각 단어의 임베딩 값에 학습 가능한 가중치 행렬 $W^Q, W^K, W^V$를 각각 곱해 **query(q), key(k), value(v)** 벡터를 생성
-2. **Attention score 계산**: **특정 단어의 query**를 **문장 내 모든 단어의 key**와 비교해 유사도 점수를 계산 (예: "어제"의 query vs 문장 내 모든 단어의 key → $a_1,\ldots,a_6$) 
+2. **Attention score 계산**: **특정 단어의 query**를 **문장 내 모든 단어의 key**와 비교해 유사도 점수를 계산 (예: "어제"의 query vs 문장 내 모든 단어의 key → $a_1,\ldots,a_6$)
 3. **가중합으로 새로운 표현 생성**: $h_{\text{어제}} = a_1v_1+a_2v_2+a_3v_3+\cdots+a_6v_6$
 4. 이 과정을 **문장 내 모든 단어에 대해** 독립적으로(병렬로) 반복
 
@@ -1093,10 +1125,10 @@ $$p(w_1,w_2,\ldots,w_N) = p(w_1),p(w_2|w_1),p(w_3|w_1,w_2)\times\cdots\times p(w
 #### Self-Attention의 한계
 
 Self-Attention은 단어 간 관계를 효율적으로 잡아내는 강력한 메커니즘이지만, 세 가지 한계가 존재한다.
+
 1. **순서 정보 부재**: 단어 간 유사도(내적)만 계산하기 때문에, 단어의 순서를 고려하지 않음
 2. **비선형성 부족**: Attention 계산은 본질적으로 가중 평균 연산이라는 **선형 결합**에 불과하기 때문에, 복잡한 패턴이나 깊은 표현력을 담기 어려움
-3. **미래 참조 문제**: 언어 모델은 시퀀스를 왼쪽에서 오른쪽으로 순차적으로 생성해야 하지만(2.1의 조건부 확률 구조), Self-Attention은 모든 단어를 동시에 보기 때문에 아직 생성되지 않아야 할 미래 단어를 참조해버림
-   ex : decoding 단계에선 아직 생성되지 않은 다음 단어를 알 수 없어야 함
+3. **미래 참조 문제**: 언어 모델은 시퀀스를 왼쪽에서 오른쪽으로 순차적으로 생성해야 하지만(2.1의 조건부 확률 구조), Self-Attention은 모든 단어를 동시에 보기 때문에 아직 생성되지 않아야 할 미래 단어를 참조해버림 ex : decoding 단계에선 아직 생성되지 않은 다음 단어를 알 수 없어야 함
 
 #### 순서 정보 부재 한계 해결 1 — Positional Encoding
 
@@ -1117,10 +1149,10 @@ Self-Attention은 단어 간 관계를 효율적으로 잡아내는 강력한 �
 > 
 > 그래서 self-attention 층 바로 위에 각 단어별로 독립적인 Feed-Forward Network(및 ReLU 같은 비선형 활성화 함수)를 얹는다. 즉 self-attention이 "문장 내 어떤 단어의 정보를 얼마나 가져올지"를 결정하는 역할을 맡고, 그 위의 FF 네트워크는 "가져온 정보를 비선형적으로 가공해 더 복잡한 표현으로 변환"하는 역할을 맡는 식으로 **역할을 분업**한다.
 
->[!note]
->- **같은 층 안에서**: 문장 속 모든 단어 위치가 **동일한** $W^Q,W^K,W^V$와 FFN 가중치를 공유해서 사용함 (단어마다 따로 계산은 하지만, 쓰는 파라미터는 같음)
-> - **층과 층 사이에서**: 1층, 2층, ..., N층은 각각 **완전히 독립적인** attention·FFN 파라미터를 가짐 (전혀 공유 안 됨)
->→ 그래서 층(layer)을 하나 쌓을 때마다 그 층 전용 파라미터 세트가 통째로 추가되는 셈이라, 층 수가 늘수록 전체 파라미터 수도 거의 비례해서 늘어남
+> [!note]
+> 
+> - **같은 층 안에서**: 문장 속 모든 단어 위치가 **동일한** $W^Q,W^K,W^V$와 FFN 가중치를 공유해서 사용함 (단어마다 따로 계산은 하지만, 쓰는 파라미터는 같음)
+> - **층과 층 사이에서**: 1층, 2층, ..., N층은 각각 **완전히 독립적인** attention·FFN 파라미터를 가짐 (전혀 공유 안 됨) → 그래서 층(layer)을 하나 쌓을 때마다 그 층 전용 파라미터 세트가 통째로 추가되는 셈이라, 층 수가 늘수록 전체 파라미터 수도 거의 비례해서 늘어남
 
 #### 미래 참조 문제 한계 해결 3 — Masked Self-Attention
 
@@ -1142,19 +1174,22 @@ Self-Attention은 단어 간 관계를 효율적으로 잡아내는 강력한 �
 
 #### Self-Attention 정리
 
-- Self-Attention은 문장 내 모든 단어가 서로 직접 상호작용하여, 
-1) 장거리 의존성을 효율적으로 포착하고 
-2) 병렬 처리를 가능하게 하는 메커니즘
+- Self-Attention은 문장 내 모든 단어가 서로 직접 상호작용하여,
+
+1. 장거리 의존성을 효율적으로 포착하고
+2. 병렬 처리를 가능하게 하는 메커니즘
+
 - 한계 해결 방법 총정리
     1. **순서 정보 부재 → Positional Encoding**: 단어 임베딩만으로는 몇 번째 단어인지 알 수 없으므로, 위치 $i$를 나타내는 위치 벡터를 만들어 단어 임베딩에 더한 뒤 입력으로 사용(Sinusoidal / Learned 두 방식)
     2. **비선형성 부족 → Feed-Forward Network 추가**: attention의 가중합 연산은 선형 결합에 불과해 복잡한 패턴을 표현하기 어려우므로, 각 단어 출력 벡터에 Fully Connected + ReLU 등을 추가해 비선형적으로 표현력을 확장
     3. **미래 참조 문제 → Masked Self-Attention**: 언어 생성은 왼쪽에서 오른쪽으로 순차 진행되어야 하는데 Self-Attention은 모든 단어를 동시에 보므로, 미래 단어에 해당하는 attention score를 $-\infty$로 설정해(softmax 결과 0이 되어) 아예 참조되지 않도록 차단
-- 전체 구조를 쌓으면: 
-$$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Masked Self-Attention} \to \text{Feed-Forward}]\times N \to \text{Linear} \to \text{Softmax} \to \text{Probabilities}$$
+- 전체 구조를 쌓으면: $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Masked Self-Attention} \to \text{Feed-Forward}]\times N \to \text{Linear} \to \text{Softmax} \to \text{Probabilities}$$
 - 이 **"Masked Self-Attention + Feed-Forward를 한 블록으로 삼아 여러 번 쌓는 구조"**가 다음에 배울 **Transformer**의 핵심 구성 요소
 
 ### 3.2 Transformer
+
 > self-attention의 개념 -> self-attention의 한계 극봅 -> 몇가지 트릭 추가로 Transformer 아키텍쳐가 고안됨
+
 #### Attention Is All You Need
 
 - Transformer는 2017년 Google이 발표한 "Attention Is All You Need" 논문에서 처음 제안된 아키텍처
@@ -1195,8 +1230,8 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 > $\sqrt{d/h}$로 나누는 것은 이 "차원이 커질수록 값도 커지는" 통계적 경향을 미리 상쇄해서, softmax 입력이 적당한 범위 안에 머물도록(=출력이 지나치게 뾰족해지지 않도록) 조정하는 정규화다.
 
 #### Trick 3 : Residual Connection
-> Residual connection은 layer를 통과한것 뿐만 아니라 layer를 통과하지 않은 것까지 사용하는 것
-> "최종 출력"에서 한 번만 쓰이는 게 아니라, **매 층(layer)마다** 그 층의 출력을 계산할 때 반복적으로 사용된다.
+
+> Residual connection은 layer를 통과한것 뿐만 아니라 layer를 통과하지 않은 것까지 사용하는 것 "최종 출력"에서 한 번만 쓰이는 게 아니라, **매 층(layer)마다** 그 층의 출력을 계산할 때 반복적으로 사용된다.
 > 
 > 각 층에서: **층의 출력 = (원래 입력 x) + (x가 layer를 통과한 결과)** → 이 둘을 더한 값이 다음 층으로 넘어감
 > 
@@ -1241,41 +1276,41 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 - Cross-Attention의 특징: Self-Attention과 다르게, **Query는 decoder에서, Key와 Value는 encoder에서** 가져옴
 
 > [!question]+ Encoder-Decoder에서 Decoder는 Query, Encoder는 Key/Value를 갖는다는 게 무슨 뜻인가 — Cross-Attention
->
+> 
 > Encoder-Decoder 구조에서는 Self-Attention과 달리 Query와 Key/Value의 출처가 나뉜다.
->
+> 
 > - **Decoder**: "지금 원문의 어떤 부분이 필요한가"를 묻는 **Query**
 > - **Encoder**: 원문을 다 읽고 만들어둔 각 단어의 **Key/Value**("나는 이런 정보를 갖고 있어")
->
+> 
 > Decoder가 단어를 하나 생성할 때마다 Query를 만들고, 이를 Encoder의 각 Key와 내적해 유사도를 구한 뒤, 관련도가 높은 단어일수록 큰 가중치로 Value들을 **가중합**해서 필요한 원문 정보를 가져온다. 이 과정이 생성 스텝마다 반복된다.
->
+> 
 > |구분|Query 출처|Key/Value 출처|
 > |---|---|---|
 > |Self-Attention|같은 시퀀스|같은 시퀀스|
 > |Cross-Attention|Decoder|Encoder|
->
+> 
 > **2.3 Seq2Seq Attention과의 관계**
->
+> 
 > 2.3의 Seq2Seq Attention(디코더 hidden state=Query, 인코더 hidden state=Key/Value)과 핵심 아이디어는 동일하다. Transformer의 Cross-Attention은 이를 별도로 학습된 $W^Q,W^K,W^V$, Scaled Dot-Product, Multi-Head 같은 정교한 도구로 구현한 버전이라는 점이 차이다.
 
 > [!question]+ Cross-Attention에서 residual connection이 "프랑스어와 영어를 섞어준다"는 게 무슨 뜻인가
->
+> 
 > Decoder의 Cross-Attention 출력은 Decoder의 Query가 결정한 attention 가중치에 따라 Encoder의 영어 원문 표현(Key/Value) 중 필요한 정보(Value)를 가중합한 벡터이다. (Query=프랑스어 기반, Key/Value=영어 원문에서 옴).
->
+> 
 > residual connection 공식(출력 = 원래 입력 + layer 통과 결과)을 대입하면:
->
+> 
 > - $x$(원래 입력) = Cross-Attention 이전의 **프랑스어** 디코더 표현
 > - $\text{Layer}(x)$ = Cross-Attention이 가져온 **영어** 정보
->
+> 
 > 이 둘을 더하는 것이 곧 "프랑스어와 영어를 섞어준다"는 의미다.
->
+> 
 > 이렇게 함으로써 "지금까지 프랑스어로 뭘 말했는가"(자기 문맥)를 잃지 않으면서, "영어 원문에서 참고할 정보"를 추가로 얹을 수 있다 — 덮어쓰기가 아니라 누적이다.
+
 #### Transformer의 놀라운 결과
 
 - Transformer는 Neural Machine Translation task에서 당시 최고 성능을 달성했을 뿐 아니라, **더 적은 계산 비용으로 더 좋은 성능**을 냈다 (BLEU 점수는 기존 모델들보다 높으면서, 학습에 필요한 연산량(FLOPs)은 오히려 한 자릿수 이상 적음)
-> Transformer는 RNN처럼, CNN 처럼, MLP처럼 학습이 될 수도 있음. 딱 정해져있지 않음
-> 뉴럴 아키텍쳐를 서칭을 하는 아키텍쳐라고 볼 수 있음
-> ex : 번역을 하면 번역 학습에 최적화된 신경망 구조를 학습함, 기존처럼 cnn하지, rnn할지 미리 정하지 않음 
+
+> Transformer는 RNN처럼, CNN 처럼, MLP처럼 학습이 될 수도 있음. 딱 정해져있지 않음 뉴럴 아키텍쳐를 서칭을 하는 아키텍쳐라고 볼 수 있음 ex : 번역을 하면 번역 학습에 최적화된 신경망 구조를 학습함, 기존처럼 cnn하지, rnn할지 미리 정하지 않음
 
 #### Transformer와 사전학습(pretraining)
 
@@ -1316,11 +1351,12 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 
 **용어 정리**
 
-| 용어                             | 의미                                                                     |
-| ------------------------------ | ---------------------------------------------------------------------- |
-| **사전학습(Pretraining)**          | 특정 목적 없이, 대규모 텍스트로 언어의 일반적인 패턴을 학습하는 단계                                |
-| **다운스트림 태스크(Downstream Task)** | 사전학습된 모델을 **실제로 적용하고 싶은 구체적인 문제**(예: 감정 분류, 개체명 인식, 질의응답, 문장 유사도 판단 등) |
-| **파인튜닝(Fine-tuning)**          | 사전학습된 모델을, 그 다운스트림 태스크에 맞도록 **추가로 학습(조정)시키는 과정**                       |
+|용어|의미|
+|---|---|
+|**사전학습(Pretraining)**|특정 목적 없이, 대규모 텍스트로 언어의 일반적인 패턴을 학습하는 단계|
+|**다운스트림 태스크(Downstream Task)**|사전학습된 모델을 **실제로 적용하고 싶은 구체적인 문제**(예: 감정 분류, 개체명 인식, 질의응답, 문장 유사도 판단 등)|
+|**파인튜닝(Fine-tuning)**|사전학습된 모델을, 그 다운스트림 태스크에 맞도록 **추가로 학습(조정)시키는 과정**|
+
 ### 4.1 사전학습(Pretraining)이란
 
 #### 사전학습(Pretraining)이란
@@ -1328,22 +1364,25 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 - 대규모 데이터 셋을 이용해, 모델이 데이터의 **일반적인 특징과 표현**을 학습하도록 하는 과정
 - 특히 언어 모델은 인터넷의 방대한 텍스트(웹 문서, 책, 뉴스 등)를 활용해 **비지도학습(unsupervised)** 방식으로 학습되어, 일반적인 언어 패턴, 지식, 문맥 이해 능력을 습득함
 - 큰 흐름: 다양한 형태의 **Data**(Text, Images, Speech 등) → **Training** → 하나의 범용 **Foundation Model** → **Adaptation**(적응) → 다양한 **Tasks**(질의응답, 감성분석, 정보추출 등)로 뻗어나감
+
 #### 언어모델의 사전학습 방식
+
 - 인터넷의 대규모 텍스트 코퍼스에서 언어모델링 학습을 수행한 후, 학습된 네트워크 파라미터를 저장해 다양한 다운스트림 태스크에 활용
+
 #### Pretrain → Fine-tuning 패러다임
+
 - 사전학습을 통해, 언어 패턴을 잘 학습한 파라미터로 초기화해 NLP application 성능을 향상시킬 수 있음
 - **Step 1: Pretrain** (언어모델링으로 학습) — 방대한 텍스트로 일반적인 언어 패턴을 학습("Lots of text; learn general things!")
 - **Step 2: Finetune** (실제로 풀고 싶은 task로 추가 학습) — 적은 양의 레이블 데이터로 특정 task에 맞춰 적응("Not many labels; adapt to the task!")
 - 두 단계 모두 **같은 모델 구조**(Transformer, LSTM 등)를 사용하며, 1단계에서 학습한 파라미터가 2단계의 **출발점(초기화)**으로 재사용됨
 
-
 ### 4.2 Encoder 모델
 
 #### Encoder / Encoder-Decoder / Decoder 모델 개요
-사전학습 할 때 Encoder만 쓸 수도, Decoder만 쓸 수도, Encoder-Decoder 모두 쓸 수도 있음
-사전학습된 Transformer 블록(3.2)은 조합 방식에 따라 크게 세 갈래로 나뉘며, 4.2~4.4에서 순서대로 다룸
 
-| |특징|
+사전학습 할 때 Encoder만 쓸 수도, Decoder만 쓸 수도, Encoder-Decoder 모두 쓸 수도 있음 사전학습된 Transformer 블록(3.2)은 조합 방식에 따라 크게 세 갈래로 나뉘며, 4.2~4.4에서 순서대로 다룸
+
+||특징|
 |---|---|
 |**Encoders**|양방향 문맥을 활용할 수 있음|
 |**Encoder-Decoders**|Encoder와 Decoder의 장점을 모두 결합|
@@ -1353,17 +1392,14 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 
 우리가 보통 토큰 위에서 예측을 할 때는 토큰 **다음**에 올 단어를 예측했었다. 그러나 MLM에서는 단어를 마스킹하고 마스킹된 단어를 예측하도록 모델링을 한다. (like 빈칸 맞추기)
 
-- Encoder 모델은 **양방향 문맥을 모두 활용**하기 때문에, 전통적인 언어모델(2.1의 왼→오 순차 예측 방식)과는 다른 사전학습 방법이 필요함
-	양 방향이란 이유는 masking 예측을 위해서 mask 이전, 이후 (양방향) 맥락을 이해해서 임베딩 해야해서.
+- Encoder 모델은 **양방향 문맥을 모두 활용**하기 때문에, 전통적인 언어모델(2.1의 왼→오 순차 예측 방식)과는 다른 사전학습 방법이 필요함 양 방향이란 이유는 masking 예측을 위해서 mask 이전, 이후 (양방향) 맥락을 이해해서 임베딩 해야해서.
 - 따라서 Encoder 모델의 사전학습을 위해선 입력 단어의 일부를 **[MASK] 토큰으로 치환**해, 모델이 이 [MASK] 자리에 올 단어를 앞뒤 문맥 모두를 이용해 예측하도록 학습하는 방법을 사용
 - 이를 **Masked Language Model(MLM)**이라 하며, 대표적인 모델이 **BERT**(2018년 Google 공개, Transformer 기반)
 
 #### BERT의 학습 방법 1 — Masked LM
 
 - 입력 토큰의 **15%를 무작위로 선택**
-- 선택된 토큰은 세 방식으로 처리: **[MASK] 토큰 치환(80%)**, **랜덤 토큰 치환(10%)**(랜덤한 단어로 대체), **그대로 두기(10%)**
-	  왜 랜덤한 단어로 바꾸지? : 오타나 노이즈가 있는 입력값에도 강건하게 하기 위함
-	  왜 그대로 두지? : 정상적인 단어가 정상적으로 나오는 훈련도 하기 위해
+- 선택된 토큰은 세 방식으로 처리: **[MASK] 토큰 치환(80%)**, **랜덤 토큰 치환(10%)**(랜덤한 단어로 대체), **그대로 두기(10%)** 왜 랜덤한 단어로 바꾸지? : 오타나 노이즈가 있는 입력값에도 강건하게 하기 위함 왜 그대로 두지? : 정상적인 단어가 정상적으로 나오는 훈련도 하기 위해
 - 마스크된 위치의 Transformer Encoder 출력을 **FFNN + Softmax**에 통과시켜, 전체 단어 사전에 대한 확률분포로 원래 단어를 예측
 
 > [!question]+ 왜 [MASK]만 쓰지 않고 80/10/10 비율로 섞는가
@@ -1385,10 +1421,11 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 - BERT는 MLM과 NSP **두 태스크를 동시에** 학습하며, **[CLS] 토큰은 NSP용으로, 다른 토큰들은 MLM용으로** 학습됨
 
 #### BERT의 다운스트림 태스크
-| 구분                               | 의미                                                             |
-| -------------------------------- | -------------------------------------------------------------- |
-| **다운스트림 태스크**                    | BERT를 파인튜닝해서 실제로 풀고자 하는 구체적 목표 — MNLI, QQP, SST2, SQuAD, NER 등 |
-| **Sentence Level / Token Level** | 그 다운스트림 태스크들이 "BERT의 어떤 출력을 활용하는 방식인지"에 따라 묶은 **분류 기준(카테고리)**  |
+
+|구분|의미|
+|---|---|
+|**다운스트림 태스크**|BERT를 파인튜닝해서 실제로 풀고자 하는 구체적 목표 — MNLI, QQP, SST2, SQuAD, NER 등|
+|**Sentence Level / Token Level**|그 다운스트림 태스크들이 "BERT의 어떤 출력을 활용하는 방식인지"에 따라 묶은 **분류 기준(카테고리)**|
 
 **Sentence Level (문장/문장쌍 수준 — [CLS] 출력 활용)**
 
@@ -1411,7 +1448,9 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 > → 즉 다운스트림 태스크에서 어떤 출력을 쓸지는 임의로 정하는 게 아니라, **사전학습 때 그 위치가 이미 어떤 정보를 표현하도록 훈련되어 있었는지**에 따라 자연스럽게 정해지는 것이다.
 
 #### BERT의 결과
+
 : 범용적인 모델이란 것에만 주목하고 넘어가도 될 듯
+
 - BERT는 다양한 태스크에 적용 가능한 범용성을 보여주었으며, fine-tuning을 통해 여러 NLP 과제에서 새로운 SOTA(최첨단) 성능을 달성
 - GLUE 벤치마크 평균 점수: 기존 SOTA(74.0), OpenAI GPT(75.1) 대비 BERT_BASE(79.6), BERT_LARGE(82.1)로 크게 향상
 - Layer의 수, hidden state의 크기, attention head의 수가 클수록 성능이 향상되는 경향을 보임(예: 3층 모델 대비 24층 모델에서 언어모델 perplexity는 낮아지고 MNLI·MRPC·SST-2 정확도는 꾸준히 상승)
@@ -1424,6 +1463,7 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 - → 그래서 생성 태스크엔 **디코더 기반 모델**을 주로 사용 (다음 4.4 Decoder 모델로 연결)
 
 ### 4.3 Encoder-Decoder 모델
+
 #### Encoder-Decoder 모델이란
 
 - 4.2에서 정리했듯, **Encoder-Decoder는 Encoder와 Decoder의 장점을 모두 결합**한 구조
@@ -1473,12 +1513,14 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 → Encoder-Decoder 구조가 Encoder만 있는 구조(BERT류)와 Decoder만 있는 구조(GPT류) 각각의 한계를 보완하며, 범용적으로 강력한 성능을 낼 수 있음을 실증적으로 보여줌
 
 ### 4.4 Decoder 모델
+
 #### Decoder 모델이란 (재확인)
 
 - 4.2~4.3에서 정리한 세 갈래 구분 중 마지막 유형: **Decoders**는 전형적인 언어 모델 구조로, **문장 생성에 유용**하지만 **미래 단어를 참조할 수 없음**(단방향, 왼→오)
 - 남은 질문: "이 구조를 어떻게 학습(사전학습·fine-tuning)시킬 것인가?" — 대표 모델 **GPT** 시리즈로 확인
 
 #### Finetuning Decoder
+
 - Transformer의 Decoder는 사전학습 단계에서 **다음 단어 예측(Next Token Prediction)**을 학습
 - **생성 태스크에 활용할 때**: 사전학습 때와 동일하게 다음 단어 예측 방식으로 fine-tuning → decoder는 대화, 요약 등 **출력이 시퀀스인 태스크**에 자연스럽게 적합
 - **분류 태스크에 활용할 때**: 마지막 hidden state 위에 새로운 linear layer를 연결해 classifier로 사용. 이 linear layer는 처음부터 새로 학습해야 하며, fine-tuning 시 gradient가 decoder 전체로 전파됨
@@ -1496,9 +1538,7 @@ $$\text{Inputs} \to \text{Embeddings}(+\text{Position Embeddings}) \to [\text{Ma
 
 ### 4.5 In-Context Learning
 
-> Learning vs Training
-> Learning : 어떤 문제를 풀기 위한 패턴을 인식하는 것 ( 더 넓은 의미 )
-> Training. : 파라미터를 훈련하는 것 ( 더 좋은 의미 )
+> Learning vs Training Learning : 어떤 문제를 풀기 위한 패턴을 인식하는 것 ( 더 넓은 의미 ) Training. : 파라미터를 훈련하는 것 ( 더 좋은 의미 )
 
 #### GPT-3와 In-Context Learning
 
