@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI 정리 2.md",
+                "file": "AI학습 가이드.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AI 정리 2"
+              "title": "AI학습 가이드"
             }
           }
         ]
@@ -187,11 +187,11 @@
   },
   "active": "721feed6411dd0be",
   "lastOpenFiles": [
+    "AI 정리 2.md",
     "AI 정리 1.md",
     "AI 정리 0.md",
     "AI 정리 3.md",
     "AI학습 가이드.md",
-    "AI 정리 2.md",
     "AI 정리 2 - 모의고사.md",
     "AI 정리 1 - 모의고사.md",
     "막 노트.md",
