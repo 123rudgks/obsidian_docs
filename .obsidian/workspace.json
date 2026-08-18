@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI학습 가이드.md",
+                "file": "AI 정리 5.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "AI학습 가이드"
+              "title": "AI 정리 5"
             }
           }
         ]
@@ -46,7 +46,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "파일 탐색기"
             }
           },
           {
@@ -176,32 +176,33 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false
     }
   },
-  "active": "721feed6411dd0be",
+  "active": "1f47ae2671498574",
   "lastOpenFiles": [
+    "AI 정리 3.md",
+    "AI 정리 5.md",
+    "코딩테스트/프로그래머스 기초 문제 오답노트.md",
+    "막 노트.md",
+    "How to Study.md",
     "AI 정리 2.md",
     "AI 정리 1.md",
-    "AI 정리 0.md",
-    "AI 정리 3.md",
     "AI학습 가이드.md",
-    "AI 정리 2 - 모의고사.md",
-    "AI 정리 1 - 모의고사.md",
-    "막 노트.md",
-    "싸피 1회차 월말평가.md",
-    "How to Study.md",
-    "코딩테스트/프로그래머스 기초 문제 오답노트.md",
-    "코딩테스트",
-    "영어 회화 운영 방식.md",
     "공부 진행 상황.md",
     "교재 예제 모음.md",
+    "AI 정리 1 - 모의고사.md",
+    "AI 정리 0.md",
+    "AI 정리 2 - 모의고사.md",
+    "싸피 1회차 월말평가.md",
+    "코딩테스트",
+    "영어 회화 운영 방식.md",
     "면접 준비.md",
     "코테 입출력 예시.md",
     "문제 만들기 프롬프트.md",
@@ -215,7 +216,6 @@
     "모의고사/보충 모의고사 - 문제.md",
     "Java/8. 예외 처리.md",
     "1회차 과목 평가, 월말 평가 가이드.md",
-    "모의고사/모의고사 2회 - 해설.md",
     "모의고사",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
