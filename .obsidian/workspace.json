@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "c4673c7b4b47633a",
+        "id": "4cc46a49b9c318fe",
         "type": "tabs",
         "children": [
           {
-            "id": "721feed6411dd0be",
+            "id": "047e4028404dc2b1",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -46,7 +46,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
-              "title": "파일 탐색기"
+              "title": "Files"
             }
           },
           {
@@ -80,8 +80,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 253.5,
-    "collapsed": true
+    "width": 253.5
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -177,52 +176,56 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:빠른 전환기 열기": false,
-      "graph:그래프 뷰 열기": false,
-      "canvas:새 캔버스 만들기": false,
-      "daily-notes:오늘의 일일 노트 열기": false,
-      "templates:템플릿 삽입": false,
-      "command-palette:명령어 팔레트 열기": false,
-      "bases:새 베이스 생성하기": false
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
     }
   },
-  "active": "721feed6411dd0be",
+  "active": "1f47ae2671498574",
   "lastOpenFiles": [
-    "AI/각 강의 별 키워드 목록.md",
-    "AI/asset/AI 정리 4.md",
-    "AI/asset/AI 정리 4 - 모의고사.md",
-    "AI/asset/AI 정리 3.md",
-    "AI/asset/AI 정리 3 - 모의고사.md",
-    "AI/asset/AI 정리 2_개편.md",
-    "AI/asset/AI 정리 2.md",
-    "AI/asset/AI 정리 2 - 모의고사.md",
-    "AI/asset/AI 정리 2 - 모의고사 개편.md",
-    "AI/asset/AI 정리 1_개편.md",
-    "AI/asset/AI 정리 1.md",
-    "AI/asset/AI 정리 1 - 모의고사.md",
-    "AI/asset",
-    "AI/Summary For Exam.md",
-    "AI/04. 시각 인식 모델의 발전 - CNN에서 Vision Transformer까지.md",
-    "AI/02. 자연어 처리 모델의 발전 - 워드 임베딩에서 LLM까지.md",
-    "AI/03. 파운데이션 모델과 LLM의 발전 - 사전학습에서 정렬·추론·평가까지.md",
-    "AI/01. 머신러닝의 원리 - 데이터에서 신경망 학습까지.md",
-    "AI",
-    "AI 정리 4_개편.md",
-    "AI 정리 6.md",
-    "코딩테스트/프로그래머스 기초 문제 오답노트.md",
+    "코딩테스트/코테 공부 방법.md",
+    "How to Study.md",
+    "AI학습 가이드.md",
     "코딩테스트/문제 풀이 skill.md",
+    "코딩테스트/프로그래머스 기초 문제 오답노트.md",
+    "AI/Summary For Exam.md",
+    "AI/각 강의 별 키워드 목록.md",
+    "AI/02. 자연어 처리 모델의 발전 - 워드 임베딩에서 LLM까지.md",
+    "AI/04. 시각 인식 모델의 발전 - CNN에서 Vision Transformer까지.md",
+    "AI/asset/AI 정리 4 - 모의고사.md",
+    "AI/asset/AI 정리 3 - 모의고사.md",
+    "AI/asset/AI 정리 2 - 모의고사 개편.md",
+    "AI/asset/AI 정리 1 - 모의고사.md",
+    "AI/asset/AI 정리 1.md",
+    "AI/01. 머신러닝의 원리 - 데이터에서 신경망 학습까지.md",
+    "AI/asset/Unconfirmed 599261.crdownload",
+    "AI/asset/AI 정리 1_개편.md",
+    "AI/asset/AI 정리 4.md",
+    "AI/asset/Unconfirmed 681209.crdownload",
+    "AI/asset/Unconfirmed 98263.crdownload",
+    "AI/asset/AI 정리 1 - 모의고사 개편.md",
+    "AI/Unconfirmed 854895.crdownload",
+    "AI/asset/AI 정리 3.md",
     "AI 정리 5.md",
-    "AI 정리 3.md",
-    "AI 정리 2.md",
-    "AI 정리 1.md",
-    "포트폴리오 아이디어.md",
-    "코딩테스트",
-    "Java/알고리즘 오답노트",
+    "AI/03. 파운데이션 모델과 LLM의 발전 - 사전학습에서 정렬·추론·평가까지.md",
+    "모의고사/모의고사 1회 - 문제.md",
+    "모의고사/보충 모의고사 - 해설.md",
+    "모의고사/보충 모의고사 - 문제.md",
+    "모의고사/모의고사 2회 - 해설.md",
+    "모의고사/모의고사 2회 - 문제.md",
+    "AI/Unconfirmed 157681.crdownload",
+    "AI/asset",
+    "AI",
+    "Unconfirmed 501392.crdownload",
+    "Unconfirmed 661319.crdownload",
+    "Unconfirmed 928680.crdownload",
     "Pasted image 20260806160418.png",
-    "모의고사",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
-    "Screenshot 2026-07-26 at 1.00.35 PM.png",
-    "Java"
+    "Screenshot 2026-07-26 at 1.00.35 PM.png"
   ]
 }
