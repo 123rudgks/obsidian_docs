@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "AI/딥러닝 & 영상 모델 - 19문제/summary_for_test/시험범위_원문발췌_1차시 이미지 딥러닝 모델 - 8문제.md",
+                "file": "코딩테스트/프로그래머스 기초 문제 오답노트.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "시험범위_원문발췌_1차시 이미지 딥러닝 모델 - 8문제"
+              "title": "프로그래머스 기초 문제 오답노트"
             }
           }
         ]
@@ -46,7 +46,7 @@
                 "searchQuery": ""
               },
               "icon": "lucide-folder-closed",
-              "title": "Files"
+              "title": "파일 탐색기"
             }
           },
           {
@@ -80,7 +80,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 588.3125
+    "width": 333.5,
+    "collapsed": true
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -176,17 +177,22 @@
   },
   "left-ribbon": {
     "hiddenItems": {
-      "switcher:Open quick switcher": false,
-      "graph:Open graph view": false,
-      "canvas:Create new canvas": false,
-      "daily-notes:Open today's daily note": false,
-      "templates:Insert template": false,
-      "command-palette:Open command palette": false,
-      "bases:Create new base": false
+      "switcher:빠른 전환기 열기": false,
+      "graph:그래프 뷰 열기": false,
+      "canvas:새 캔버스 만들기": false,
+      "daily-notes:오늘의 일일 노트 열기": false,
+      "templates:템플릿 삽입": false,
+      "command-palette:명령어 팔레트 열기": false,
+      "bases:새 베이스 생성하기": false
     }
   },
   "active": "047e4028404dc2b1",
   "lastOpenFiles": [
+    "알고리즘/SW문제해결 기본 - 스택.md",
+    "AI/딥러닝 & 영상 모델 - 19문제/summary_for_test/시험범위_원문발췌_1차시 이미지 딥러닝 모델 - 8문제.md",
+    "알고리즘",
+    "코딩테스트/무제.md",
+    "코딩테스트/무제",
     "AI/월말 평가 summary.md",
     "AI/이미지 파운데이션 모델 - 17문제/summary_for_test/시험범위_원문발췌_4회차 개인화, 합성 데이터 활용 사례 - 12 문제(1).md",
     "AI/이미지 파운데이션 모델 - 17문제/summary_for_test/시험범위_원문발췌_2회차 Vision-Language Model(VLM) - 3문제(1).md",
@@ -214,15 +220,10 @@
     "AI/LangChain - 22문제/summary_for_test",
     "AI/LangChain - 22문제/untitled folder",
     "AI/Agent 모델 - 21문제/summary_for_test/시험범위_원문발췌_5차시 Domain-Specific AI Agent - 5문제(1).md",
-    "AI/Agent 모델 - 21문제/summary_for_test/시험범위_원문발췌_4차시 Reasoning and Planning in AI Agent - 4문제(1).md",
-    "AI/Agent 모델 - 21문제/summary_for_test/시험범위_원문발췌_3차시 Memory & Tool in Multi Agent System - 5문제(1).md",
-    "AI/Agent 모델 - 21문제/summary_for_test/시험범위_원문발췌_2차시 Multi-Agent System - 2문제(1).md",
     "AI/Agent 모델 - 21문제/summary_for_test",
     "AI/Agent 모델 - 21문제/untitled folder",
     "AI/이미지 파운데이션 모델 - 17문제/summary_for_test",
     "AI/이미지 파운데이션 모델 - 17문제/untitled folder",
-    "AI/딥러닝 & 영상 모델 - 19문제/summary_for_test",
-    "AI/딥러닝 & 영상 모델 - 19문제/untitled folder",
     "Pasted image 20260806160418.png",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
