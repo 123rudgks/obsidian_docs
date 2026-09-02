@@ -11,10 +11,14 @@
             "id": "047e4028404dc2b1",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "그래프 뷰"
+              "type": "markdown",
+              "state": {
+                "file": "코딩테스트/문제 풀이 skill.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "문제 풀이 skill"
             }
           }
         ]
@@ -181,7 +185,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 321.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -195,16 +199,18 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "047e4028404dc2b1",
+  "active": "1f47ae2671498574",
   "lastOpenFiles": [
-    "자료구조&알고리즘/정렬.md",
-    "자료구조&알고리즘/선택 정렬.md",
-    "자료구조&알고리즘/버블 정렬.md",
     "자료구조&알고리즘/Tip.md",
+    "자료구조&알고리즘/해시 테이블.md",
+    "자료구조&알고리즘/집합.md",
+    "자료구조&알고리즘/선택 정렬.md",
+    "자료구조&알고리즘/삽입 정렬.md",
+    "자료구조&알고리즘/버블 정렬.md",
+    "자료구조&알고리즘/정렬.md",
     "공부 진행 상황.md",
     "자료구조&알고리즘/이진 검색.md",
     "자료구조&알고리즘/검색.md",
-    "자료구조&알고리즘/집합.md",
     "자료구조&알고리즘/배열.md",
     "코딩테스트/문제 풀이 skill.md",
     "자료구조&알고리즘/무제",
@@ -224,8 +230,6 @@
     "AI/딥러닝 & 영상 모델 - 19문제/1차시 이미지 딥러닝 모델 - 8문제.md",
     "AI/AI & 기계학습 기초 - 8문제/4차시 비지도 학습 - 2문제.md",
     "AI/AI & 기계학습 기초 - 8문제/2차시 지도학습 - 5문제.md",
-    "AI/AI & 기계학습 기초 - 8문제/summary_for_test/시험범위_원문발췌_2차시 지도학습 - 5문제.md",
-    "AI/AI & 기계학습 기초 - 8문제/1차시  AI와 ML은 무엇인가? - 1문제.md",
     "AI/리소스 효율적 학습법 - 13문제/summary_for_test",
     "AI/리소스 효율적 학습법 - 13문제/untitled folder",
     "AI/LangChain - 22문제/summary_for_test",
