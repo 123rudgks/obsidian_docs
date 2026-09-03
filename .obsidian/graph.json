@@ -15,11 +15,11 @@
       }
     }
   ],
-  "collapse-display": true,
+  "collapse-display": false,
   "showArrow": false,
   "textFadeMultiplier": 0,
-  "nodeSizeMultiplier": 1,
-  "lineSizeMultiplier": 1,
+  "nodeSizeMultiplier": 1.01056854878168,
+  "lineSizeMultiplier": 1.19469615422253,
   "collapse-forces": true,
   "centerStrength": 0.518713248970312,
   "repelStrength": 10,
