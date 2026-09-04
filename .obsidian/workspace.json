@@ -11,10 +11,14 @@
             "id": "79477bb146e151f7",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "Clippings/통계검색  통계  관광지식정보시스템.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "통계검색  통계  관광지식정보시스템"
             }
           }
         ]
@@ -197,6 +201,9 @@
   },
   "active": "79477bb146e151f7",
   "lastOpenFiles": [
+    "Clippings/싸밥서울.md",
+    "Clippings/통계검색  통계  관광지식정보시스템.md",
+    "Clippings",
     "자료구조&알고리즘/부분집합.md",
     "자료구조&알고리즘/조합.md",
     "자료구조&알고리즘/완전 탐색.md",
@@ -222,8 +229,6 @@
     "자료구조&알고리즘/이진 검색.md",
     "자료구조&알고리즘/무제",
     "코딩테스트/코테 공부 방법.md",
-    "코딩테스트/프로그래머스 기초 문제 오답노트.md",
-    "자료구조&알고리즘/SW문제해결 기본 - 스택.md",
     "자료구조&알고리즘",
     "코딩테스트/무제",
     "AI/리소스 효율적 학습법 - 13문제/summary_for_test",
@@ -232,7 +237,6 @@
     "AI/LangChain - 22문제/untitled folder",
     "AI/Agent 모델 - 21문제/summary_for_test",
     "AI/Agent 모델 - 21문제/untitled folder",
-    "AI/이미지 파운데이션 모델 - 17문제/summary_for_test",
     "Pasted image 20260806160418.png",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
