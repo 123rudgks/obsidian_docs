@@ -4,24 +4,39 @@
     "type": "split",
     "children": [
       {
-        "id": "e7e99b7cfd2ef38f",
+        "id": "fb5841b2f38054d3",
         "type": "tabs",
         "children": [
           {
-            "id": "79477bb146e151f7",
+            "id": "4294f70d0fa74324",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Clippings/통계검색  통계  관광지식정보시스템.md",
+                "file": "자료구조&알고리즘/큐.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "통계검색  통계  관광지식정보시스템"
+              "title": "큐"
+            }
+          },
+          {
+            "id": "84c01f00cbc55803",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "자료구조&알고리즘/이진 탐색 트리.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "이진 탐색 트리"
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -71,19 +86,17 @@
             "type": "leaf",
             "state": {
               "type": "bookmarks",
-              "state": {
-                "showSearch": false,
-                "searchQuery": ""
-              },
+              "state": {},
               "icon": "lucide-bookmark",
-              "title": "북마크"
+              "title": "Bookmarks"
             }
           }
         ]
       }
     ],
     "direction": "horizontal",
-    "width": 283.5
+    "width": 288.0703125,
+    "collapsed": true
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -171,7 +184,7 @@
             }
           },
           {
-            "id": "8226d605a905a4b8",
+            "id": "19b2a6ad8cc71868",
             "type": "leaf",
             "state": {
               "type": "git-view",
@@ -185,7 +198,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 420.5
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -199,44 +212,44 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "79477bb146e151f7",
+  "active": "84c01f00cbc55803",
   "lastOpenFiles": [
-    "Clippings/싸밥서울.md",
-    "Clippings/통계검색  통계  관광지식정보시스템.md",
-    "Clippings",
-    "자료구조&알고리즘/부분집합.md",
+    "자료구조&알고리즘/연결리스트.md",
+    "자료구조&알고리즘/큐.md",
+    "자료구조&알고리즘/퀵 정렬.md",
+    "자료구조&알고리즘/퀵 셀렉트.md",
+    "자료구조&알고리즘/정렬.md",
+    "자료구조&알고리즘/이진 탐색 트리.md",
+    "트리.md",
+    "자료구조&알고리즘/Untitled.md",
+    "자료구조&알고리즘/Tip.md",
+    "자료구조&알고리즘/병합 정렬.md",
+    "자료구조&알고리즘/삽입 정렬.md",
+    "자료구조&알고리즘/선택 정렬.md",
+    "자료구조&알고리즘/버블 정렬.md",
     "자료구조&알고리즘/조합.md",
     "자료구조&알고리즘/완전 탐색.md",
     "자료구조&알고리즘/순열.md",
-    "자료구조&알고리즘/배열.md",
-    "자료구조&알고리즘/퀵 정렬.md",
-    "자료구조&알고리즘/검색.md",
+    "자료구조&알고리즘/부분집합.md",
     "자료구조&알고리즘/백트래킹.md",
-    "자료구조&알고리즘/Tip.md",
-    "자료구조&알고리즘/선택 정렬.md",
-    "conflict-files-obsidian-git.md",
-    "자료구조&알고리즘/큐.md",
+    "Clippings/통계검색  통계  관광지식정보시스템.md",
+    "Clippings/싸밥서울.md",
+    "Clippings",
+    "자료구조&알고리즘/SW문제해결 기본 - 스택.md",
+    "자료구조&알고리즘/집합.md",
+    "자료구조&알고리즘/동적 프로그래밍.md",
     "자료구조&알고리즘/재귀.md",
     "자료구조&알고리즘/스택.md",
-    "자료구조&알고리즘/동적 프로그래밍.md",
-    "코딩테스트/문제 풀이 skill.md",
     "자료구조&알고리즘/해시 테이블.md",
-    "자료구조&알고리즘/집합.md",
-    "자료구조&알고리즘/삽입 정렬.md",
-    "자료구조&알고리즘/버블 정렬.md",
-    "자료구조&알고리즘/정렬.md",
-    "공부 진행 상황.md",
-    "자료구조&알고리즘/이진 검색.md",
-    "자료구조&알고리즘/무제",
-    "코딩테스트/코테 공부 방법.md",
     "자료구조&알고리즘",
-    "코딩테스트/무제",
     "AI/리소스 효율적 학습법 - 13문제/summary_for_test",
     "AI/리소스 효율적 학습법 - 13문제/untitled folder",
     "AI/LangChain - 22문제/summary_for_test",
     "AI/LangChain - 22문제/untitled folder",
     "AI/Agent 모델 - 21문제/summary_for_test",
     "AI/Agent 모델 - 21문제/untitled folder",
+    "AI/이미지 파운데이션 모델 - 17문제/summary_for_test",
+    "AI/이미지 파운데이션 모델 - 17문제/untitled folder",
     "Pasted image 20260806160418.png",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
