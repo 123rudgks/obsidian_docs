@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "자료구조&알고리즘/힙.md",
+                "file": "CS/운영체제/운영체제란 무엇이며, 운영체제가 하는 주요 역할은 무엇인가.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "힙"
+              "title": "운영체제란 무엇이며, 운영체제가 하는 주요 역할은 무엇인가"
             }
           }
         ]
@@ -83,8 +83,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 283.5,
-    "collapsed": true
+    "width": 283.5
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -202,6 +201,16 @@
   },
   "active": "e9e611fcc4d9c189",
   "lastOpenFiles": [
+    "포트폴리오 아이디어.md",
+    "CS/운영체제/운영체제란 무엇이며, 운영체제가 하는 주요 역할은 무엇인가.md",
+    "CS/운영체제",
+    "CS",
+    "막 노트.md",
+    "싸피 1회차 월말평가.md",
+    "노트 정리 script.md",
+    "면접 준비.md",
+    "공부 진행 상황.md",
+    "자료구조&알고리즘/힙.md",
     "자료구조&알고리즘/부분집합.md",
     "자료구조&알고리즘/순열.md",
     "자료구조&알고리즘/비트 마스킹.md",
@@ -214,21 +223,13 @@
     "자료구조&알고리즘/완전 탐색.md",
     "자료구조&알고리즘/이진 탐색 트리.md",
     "자료구조&알고리즘/트리.md",
-    "자료구조&알고리즘/힙.md",
     "자료구조&알고리즘/트라이.md",
     "자료구조&알고리즘/퀵 셀렉트.md",
     "자료구조&알고리즘/우선순위 큐.md",
     "자료구조&알고리즘/연결리스트.md",
     "자료구조&알고리즘/병합 정렬.md",
     "Clippings/통계검색  통계  관광지식정보시스템.md",
-    "Clippings/싸밥서울.md",
     "Clippings",
-    "자료구조&알고리즘/조합.md",
-    "자료구조&알고리즘/배열.md",
-    "자료구조&알고리즘/퀵 정렬.md",
-    "자료구조&알고리즘/검색.md",
-    "자료구조&알고리즘/Tip.md",
-    "자료구조&알고리즘/선택 정렬.md",
     "자료구조&알고리즘/무제",
     "자료구조&알고리즘",
     "코딩테스트/무제",
@@ -236,8 +237,6 @@
     "AI/리소스 효율적 학습법 - 13문제/untitled folder",
     "AI/LangChain - 22문제/summary_for_test",
     "AI/LangChain - 22문제/untitled folder",
-    "AI/Agent 모델 - 21문제/summary_for_test",
-    "AI/Agent 모델 - 21문제/untitled folder",
     "Pasted image 20260806160418.png",
     "Pasted image 20260727091520.png",
     "Pasted image 20260727090659.png",
