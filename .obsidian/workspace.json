@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "자료구조&알고리즘/순열.md",
+                "file": "자료구조&알고리즘/힙.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "순열"
+              "title": "힙"
             }
           }
         ]
@@ -83,7 +83,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 283.5
+    "width": 283.5,
+    "collapsed": true
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -199,14 +200,14 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "8226d605a905a4b8",
+  "active": "e9e611fcc4d9c189",
   "lastOpenFiles": [
-    "자료구조&알고리즘/비트 마스킹.md",
+    "자료구조&알고리즘/부분집합.md",
     "자료구조&알고리즘/순열.md",
+    "자료구조&알고리즘/비트 마스킹.md",
     "자료구조&알고리즘/BFS.md",
     "자료구조&알고리즘/DFS.md",
     "자료구조&알고리즘/동적 프로그래밍.md",
-    "자료구조&알고리즘/부분집합.md",
     "코딩테스트/프로그래머스 기초 문제 오답노트.md",
     "conflict-files-obsidian-git.md",
     "자료구조&알고리즘/백트래킹.md",
