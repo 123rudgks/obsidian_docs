@@ -11,10 +11,14 @@
             "id": "e9e611fcc4d9c189",
             "type": "leaf",
             "state": {
-              "type": "graph",
-              "state": {},
-              "icon": "lucide-git-fork",
-              "title": "Graph view"
+              "type": "markdown",
+              "state": {
+                "file": "코딩테스트/프로그래머스 기초 문제 오답노트.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "프로그래머스 기초 문제 오답노트"
             }
           }
         ]
