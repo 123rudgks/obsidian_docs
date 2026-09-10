@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "CS/운영체제/프로세스와 스레드의 차이.md",
+                "file": "코딩테스트/프로그래머스 기초 문제 오답노트.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "프로세스와 스레드의 차이"
+              "title": "프로그래머스 기초 문제 오답노트"
             }
           }
         ]
@@ -201,8 +201,8 @@
   },
   "active": "e9e611fcc4d9c189",
   "lastOpenFiles": [
-    "코딩테스트/문제 풀이 skill.md",
     "CS/운영체제/프로세스와 스레드의 차이.md",
+    "코딩테스트/문제 풀이 skill.md",
     "자료구조&알고리즘/트라이.md",
     "막 노트.md",
     "Pasted image 20260909165635.png",
