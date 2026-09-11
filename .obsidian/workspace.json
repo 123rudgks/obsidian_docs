@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "자료구조&알고리즘/파라메트릭 서치.md",
+                "file": "Java/Java 코딩테스트 필수 자료형 및 메소드.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "파라메트릭 서치"
+              "title": "Java 코딩테스트 필수 자료형 및 메소드"
             }
           }
         ]
@@ -83,7 +83,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 283.5
+    "width": 283.5,
+    "collapsed": true
   },
   "right": {
     "id": "e0291541ecb7ef9a",
@@ -201,8 +202,10 @@
   },
   "active": "e9e611fcc4d9c189",
   "lastOpenFiles": [
-    "자료구조&알고리즘/분할 정복.md",
+    "막 노트.md",
+    "Java/Java 코딩테스트 필수 자료형 및 메소드.md",
     "자료구조&알고리즘/파라메트릭 서치.md",
+    "자료구조&알고리즘/분할 정복.md",
     "자료구조&알고리즘/이진 검색.md",
     "자료구조&알고리즘/트리.md",
     "자료구조&알고리즘/버블 정렬.md",
@@ -212,7 +215,6 @@
     "CS/운영체제/프로세스와 스레드의 차이.md",
     "코딩테스트/문제 풀이 skill.md",
     "자료구조&알고리즘/트라이.md",
-    "막 노트.md",
     "Pasted image 20260909165635.png",
     "Pasted image 20260909165311.png",
     "Pasted image 20260909165200.png",
@@ -234,7 +236,6 @@
     "자료구조&알고리즘/부분집합.md",
     "자료구조&알고리즘/BFS.md",
     "자료구조&알고리즘/DFS.md",
-    "자료구조&알고리즘/동적 프로그래밍.md",
     "Clippings",
     "자료구조&알고리즘/무제",
     "자료구조&알고리즘",
