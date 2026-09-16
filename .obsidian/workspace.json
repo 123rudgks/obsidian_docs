@@ -25,12 +25,14 @@
             "id": "84c01f00cbc55803",
             "type": "leaf",
             "state": {
-              "type": "image",
+              "type": "markdown",
               "state": {
-                "file": "Pasted image 20260727091520.png"
+                "file": "CS/운영체제/Race Condition과 Critical Section이란 무엇이며, 이를 어떻게 해결할 수 있나요?.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "lucide-image",
-              "title": "Pasted image 20260727091520"
+              "icon": "lucide-file",
+              "title": "Race Condition과 Critical Section이란 무엇이며, 이를 어떻게 해결할 수 있나요?"
             }
           }
         ],
@@ -209,15 +211,20 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "1f47ae2671498574",
+  "active": "84c01f00cbc55803",
   "lastOpenFiles": [
+    "CS/운영체제/CPU Scheduling이란 무엇이며, 대표적인 스케줄링 알고리즘에는 무엇이 있나요?.md",
+    "CS/운영체제/Race Condition과 Critical Section이란 무엇이며, 이를 어떻게 해결할 수 있나요?.md",
+    "CS/운영체제/Context Switching이란 무엇이며, 왜 발생하고 어떤 비용이 드나요?.md",
+    "CS/운영체제/운영체제란 무엇이며, 운영체제가 하는 주요 역할은 무엇인가.md",
+    "CS/운영체제/프로세스와 스레드의 차이.md",
+    "Pasted image 20260727091520.png",
     "Pasted image 20260909165635.png",
     "Pasted image 20260909165311.png",
     "Pasted image 20260909165200.png",
     "Pasted image 20260909164939.png",
     "Pasted image 20260909164100.png",
     "Pasted image 20260806160418.png",
-    "Pasted image 20260727091520.png",
     "막 노트.md",
     "Pasted image 20260727090659.png",
     "취업준비/인사이트.md",
@@ -236,8 +243,6 @@
     "자료구조&알고리즘/DFS.md",
     "자료구조&알고리즘/BFS.md",
     "Pasted image 20260909164610.png",
-    "CS/운영체제/운영체제란 무엇이며, 운영체제가 하는 주요 역할은 무엇인가.md",
-    "CS/운영체제/프로세스와 스레드의 차이.md",
     "CS/운영체제",
     "CS",
     "자료구조&알고리즘/트라이.md",
@@ -248,8 +253,6 @@
     "자료구조&알고리즘/큐.md",
     "자료구조&알고리즘/연결리스트.md",
     "자료구조&알고리즘/퀵 정렬.md",
-    "자료구조&알고리즘/퀵 셀렉트.md",
-    "자료구조&알고리즘/정렬.md",
     "Clippings",
     "자료구조&알고리즘",
     "AI/리소스 효율적 학습법 - 13문제/summary_for_test",
