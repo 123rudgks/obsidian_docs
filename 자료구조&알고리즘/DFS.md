@@ -1,3 +1,84 @@
+## DFS 개념 코드로 구현
+```java
+import java.util.ArrayList; 
+import java.util.HashSet; 
+import java.util.List; 
+import java.util.Set;
+
+public class Solution{
+	static class Vertex{
+		int value;
+		List<Vertext> adjacentVertices = new ArrayList<>();
+		Vertex(int value){
+			this.value = value;
+		}
+		
+		void addAdjacentVertex(Vertex vertex){
+			adjacentVertices.add(vertex);
+		}
+	}
+	
+	static Vertex dfs(Vertex vertex, int searchValue, Set<Integer> visitedVertices){
+		// 현재 정점이 찾고 있던 정점이면 반환
+		if(vertex.value == searchValue){
+			return vertex;
+		}
+		
+		// 현재 정점을 방문했다고 표시
+		visitedVertices.add(vertex.value);
+		
+		// 현재 정점의 인접 정점들을 순회
+		for(Vertex adjacentVertex : vertex.adjacentVertices){
+			// 이미 방문했던 인접 정점은 무시
+			if(visitedVertices.contains(adjacentVertex.value)){
+				continue;
+			}
+			
+			// 인접 정점이 찾고 있던 정점이면 반환
+			if(adjacentVertex.value == searchValue){
+				return adjacentVertex;
+			}
+			
+			// 인접 정점에서 DFS를 계속 진행
+			Vertex vertexWeAreSearchingFor = dfs(adjacentVertex,searchValue,visitedVertices);
+			
+			// 재귀 탐색에서 원하는 정점을 찾았다면 반환
+			if(vertexWeAreSearchingFor != null){
+				return vertexWeAreSearchingFor;
+			}
+		}
+		// 끝까지 찾지 못했다면 null;
+		return null;
+	}
+	
+	public static void main(String[] args){
+		Vertex v1 = new Vertex(1); 
+		Vertex v2 = new Vertex(2); 
+		Vertex v3 = new Vertex(3); 
+		Vertex v4 = new Vertex(4); 
+		Vertex v5 = new Vertex(5);
+		v1.addAdjacentVertex(v2); 
+		v1.addAdjacentVertex(v3); 
+		v2.addAdjacentVertex(v4); 
+		v3.addAdjacentVertex(v5);
+		
+		Set<Integer> visitedVertices = new HashSet<>();
+		Vertex result = dfs( v1, 5, visitedVertices );
+		
+		if (result != null) { 
+			System.out.println("찾은 정점: " + result.value); 
+		} else { 
+			System.out.println("정점을 찾지 못했습니다."); 
+		}
+	}
+}
+```
+
+코드의 핵심 부분은 [[재귀]] 호출이다.
+```java
+Vertex vertexWeAreSearchingFor =
+        dfs(adjacentVertex, searchValue, visitedVertices);
+```
 
 ### 대표 문제 (연결 요소)개수 구하기
 ### 문제 — 연결된 영역의 개수
@@ -107,3 +188,4 @@ public class Solution {
     }
 }
 ```
+
