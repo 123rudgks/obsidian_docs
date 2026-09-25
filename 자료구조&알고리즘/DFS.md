@@ -1,4 +1,4 @@
-## DFS 개념 코드로 구현
+## DFS 개념 코드로 구현 (인접 리스트 버전)
 ```java
 import java.util.ArrayList; 
 import java.util.HashSet; 
@@ -79,6 +79,47 @@ public class Solution{
 Vertex vertexWeAreSearchingFor =
         dfs(adjacentVertex, searchValue, visitedVertices);
 ```
+
+
+### DFS 개념 코드로 구현 (인접 행렬 사용하여)
+```java
+import java.util.*;
+
+public class Main{
+	static int V = 5;
+	static int[][] graph = new int[V][V];
+	static boolean[] visited = new boolean[V];
+	
+	static void dfs(int current){
+		visited[current] = true;
+		System.out.println(current + " ");
+		
+		// current와 연결된 모든 정점 확인
+		for(int next = 0; next < V; next++){
+			if(graph[current][next] == 1 && !visited[next]){
+				dfs(next);
+			}
+		}
+	}
+	
+	static void addEdge(int a, int b){
+		graph[a][b] = 1;
+		graph[b][a] = 1;
+	}
+	public static void main(String[] args){
+		addEdge(0,1);
+		addEdge(0,2);
+		addEdge(1,3);
+		addEdge(1,4);
+		addEdge(2,4);
+		
+		dfs(0);
+	}
+}
+```
+
+
+
 
 ### 대표 문제 (연결 요소)개수 구하기
 ### 문제 — 연결된 영역의 개수
