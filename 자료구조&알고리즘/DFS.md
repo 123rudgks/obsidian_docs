@@ -1,202 +1,161 @@
-## DFS 개념 코드로 구현 (인접 리스트 버전)
+# DFS
+
+DFS(Depth-First Search)는 **깊이 우선 탐색**이다.
+
+한 경로를 가능한 깊게 탐색한 뒤 더 이상 갈 곳이 없으면 이전 정점으로 돌아와 다른 경로를 탐색한다.
+
+핵심 자료구조는 **Stack**이다.
+
+재귀로 DFS를 구현하면 함수 호출 자체가 호출 스택에 쌓이므로 별도의 Stack을 만들지 않아도 된다.
+
+BFS와의 전체 비교는 [[BFS#BFS vs DFS 비교]] 참고.
+
+## 재귀 DFS — 인접 리스트
+
 ```java
-import java.util.ArrayList; 
-import java.util.HashSet; 
-import java.util.List; 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-public class Solution{
-	static class Vertex{
-		int value;
-		List<Vertext> adjacentVertices = new ArrayList<>();
-		Vertex(int value){
-			this.value = value;
-		}
-		
-		void addAdjacentVertex(Vertex vertex){
-			adjacentVertices.add(vertex);
-		}
-	}
-	
-	static Vertex dfs(Vertex vertex, int searchValue, Set<Integer> visitedVertices){
-		// 현재 정점이 찾고 있던 정점이면 반환
-		if(vertex.value == searchValue){
-			return vertex;
-		}
-		
-		// 현재 정점을 방문했다고 표시
-		visitedVertices.add(vertex.value);
-		
-		// 현재 정점의 인접 정점들을 순회
-		for(Vertex adjacentVertex : vertex.adjacentVertices){
-			// 이미 방문했던 인접 정점은 무시
-			if(visitedVertices.contains(adjacentVertex.value)){
-				continue;
-			}
-			
-			// 인접 정점이 찾고 있던 정점이면 반환
-			if(adjacentVertex.value == searchValue){
-				return adjacentVertex;
-			}
-			
-			// 인접 정점에서 DFS를 계속 진행
-			Vertex vertexWeAreSearchingFor = dfs(adjacentVertex,searchValue,visitedVertices);
-			
-			// 재귀 탐색에서 원하는 정점을 찾았다면 반환
-			if(vertexWeAreSearchingFor != null){
-				return vertexWeAreSearchingFor;
-			}
-		}
-		// 끝까지 찾지 못했다면 null;
-		return null;
-	}
-	
-	public static void main(String[] args){
-		Vertex v1 = new Vertex(1); 
-		Vertex v2 = new Vertex(2); 
-		Vertex v3 = new Vertex(3); 
-		Vertex v4 = new Vertex(4); 
-		Vertex v5 = new Vertex(5);
-		v1.addAdjacentVertex(v2); 
-		v1.addAdjacentVertex(v3); 
-		v2.addAdjacentVertex(v4); 
-		v3.addAdjacentVertex(v5);
-		
-		Set<Integer> visitedVertices = new HashSet<>();
-		Vertex result = dfs( v1, 5, visitedVertices );
-		
-		if (result != null) { 
-			System.out.println("찾은 정점: " + result.value); 
-		} else { 
-			System.out.println("정점을 찾지 못했습니다."); 
-		}
-	}
-}
-```
-
-코드의 핵심 부분은 [[재귀]] 호출이다.
-```java
-Vertex vertexWeAreSearchingFor =
-        dfs(adjacentVertex, searchValue, visitedVertices);
-```
-
-
-### DFS 개념 코드로 구현 (인접 행렬 사용하여)
-```java
-import java.util.*;
-
-public class Main{
-	static int V = 5;
-	static int[][] graph = new int[V][V];
-	static boolean[] visited = new boolean[V];
-	
-	static void dfs(int current){
-		visited[current] = true;
-		System.out.println(current + " ");
-		
-		// current와 연결된 모든 정점 확인
-		for(int next = 0; next < V; next++){
-			if(graph[current][next] == 1 && !visited[next]){
-				dfs(next);
-			}
-		}
-	}
-	
-	static void addEdge(int a, int b){
-		graph[a][b] = 1;
-		graph[b][a] = 1;
-	}
-	public static void main(String[] args){
-		addEdge(0,1);
-		addEdge(0,2);
-		addEdge(1,3);
-		addEdge(1,4);
-		addEdge(2,4);
-		
-		dfs(0);
-	}
-}
-```
-
-
-
-
-### 대표 문제 (연결 요소)개수 구하기
-### 문제 — 연결된 영역의 개수
-
-`N × N` 크기의 지도에서 `1`은 땅, `0`은 빈 공간이다.
-상하좌우로 붙어 있는 `1`들은 하나의 영역으로 본다.  
-지도에 존재하는 **서로 연결된 영역의 개수**를 구하시오.
-예를 들어:
-```
-5
-1 1 0 0 0
-1 1 0 1 1
-0 0 0 1 1
-0 1 0 0 0
-0 1 1 0 0
-```
-
-연결 관계를 보면:
-```
-① 영역
-
-1 1
-1 1
-② 영역
-      1 1
-      1 1
-
-③ 영역
-  1
-  1 1
-```
-
-따라서 출력은:
-```
-3
-```
-
-### 조건
-- `1 ≤ N ≤ 100`
-- 이동은 **상 / 하 / 좌 / 우**만 가능
-- 대각선은 연결된 것으로 보지 않음
-- 한 번 방문한 위치는 다시 방문하지 않음
-
-
-```java
 public class Solution {
+    static class Vertex {
+        int value;
+        List<Vertex> adjacentVertices = new ArrayList<>();
 
+        Vertex(int value) {
+            this.value = value;
+        }
+
+        void addAdjacentVertex(Vertex vertex) {
+            adjacentVertices.add(vertex);
+        }
+    }
+
+    static Vertex dfs(Vertex vertex, int searchValue, Set<Integer> visitedVertices) {
+        if (vertex.value == searchValue) {
+            return vertex;
+        }
+
+        visitedVertices.add(vertex.value);
+
+        for (Vertex adjacentVertex : vertex.adjacentVertices) {
+            if (visitedVertices.contains(adjacentVertex.value)) {
+                continue;
+            }
+
+            Vertex result = dfs(adjacentVertex, searchValue, visitedVertices);
+
+            if (result != null) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+}
+```
+
+## 재귀 DFS — 인접 행렬
+
+```java
+public class Main {
+    static int V = 5;
+    static int[][] graph = new int[V][V];
+    static boolean[] visited = new boolean[V];
+
+    static void dfs(int current) {
+        visited[current] = true;
+        System.out.print(current + " ");
+
+        for (int next = 0; next < V; next++) {
+            if (graph[current][next] == 1 && !visited[next]) {
+                dfs(next);
+            }
+        }
+    }
+
+    static void addEdge(int a, int b) {
+        graph[a][b] = 1;
+        graph[b][a] = 1;
+    }
+}
+```
+
+## 반복문 + Stack으로 DFS
+
+```java
+import java.util.ArrayDeque;
+import java.util.Deque;
+
+static void dfs(int start) {
+    Deque<Integer> stack = new ArrayDeque<>();
+    boolean[] visited = new boolean[V];
+
+    stack.push(start);
+
+    while (!stack.isEmpty()) {
+        int current = stack.pop();
+
+        if (visited[current]) {
+            continue;
+        }
+
+        visited[current] = true;
+        System.out.print(current + " ");
+
+        for (int next : graph[current]) {
+            if (!visited[next]) {
+                stack.push(next);
+            }
+        }
+    }
+}
+```
+
+## 시간 복잡도
+
+- 인접 리스트: `O(V + E)`
+- 인접 행렬: `O(V²)`
+
+## 대표 문제 — 연결된 영역의 개수
+
+`N × N` 지도에서 `1`은 땅, `0`은 빈 공간이고 상하좌우로 붙어 있는 `1`을 하나의 영역으로 본다고 하자.
+
+모든 칸을 확인하면서 아직 방문하지 않은 땅을 발견할 때마다 DFS를 시작하면 연결 영역의 개수를 구할 수 있다.
+
+```java
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class Solution {
     static int N;
     static int[][] map;
     static boolean[][] visited;
 
-    // 상, 하, 좌, 우
-    static int[] dx = { -1, 1, 0, 0 };
-    static int[] dy = { 0, 0, -1, 1 };
+    static int[] dx = {-1, 1, 0, 0};
+    static int[] dy = {0, 0, -1, 1};
 
     public static void main(String[] args) throws Exception {
-        BufferedReader br = new BufferedReader(
-                new InputStreamReader(System.in)
-        );
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         N = Integer.parseInt(br.readLine());
         map = new int[N][N];
         visited = new boolean[N][N];
 
-        // 지도 입력
         for (int i = 0; i < N; i++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            for (int j = 0; i < N; i++) {
+
+            for (int j = 0; j < N; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
         int count = 0;
 
-        // 모든 칸 확인
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
-                // 땅이면서 아직 방문하지 않았다면
                 if (map[i][j] == 1 && !visited[i][j]) {
                     count++;
                     dfs(i, j);
@@ -208,20 +167,16 @@ public class Solution {
     }
 
     static void dfs(int x, int y) {
-
-        // 현재 위치 방문 처리
         visited[x][y] = true;
-        // 상하좌우 탐색
+
         for (int d = 0; d < 4; d++) {
             int nx = x + dx[d];
             int ny = y + dy[d];
-            
-            // 지도 밖이면 무시
+
             if (nx < 0 || nx >= N || ny < 0 || ny >= N) {
                 continue;
             }
 
-            // 땅이고 아직 방문하지 않았다면 계속 DFS
             if (map[nx][ny] == 1 && !visited[nx][ny]) {
                 dfs(nx, ny);
             }
@@ -230,3 +185,6 @@ public class Solution {
 }
 ```
 
+## 핵심
+
+> DFS = 한 경로를 깊게 탐색 → 막히면 되돌아옴 → Stack 또는 재귀를 사용한다.
