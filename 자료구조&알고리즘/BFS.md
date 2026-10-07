@@ -136,3 +136,114 @@ BFS는 시작점에서 거리 1, 거리 2, 거리 3 순서로 탐색한다.
 ## 서술형 핵심
 
 > BFS는 Queue를 사용하여 시작 정점에서 가까운 정점부터 너비 방향으로 탐색한다. DFS는 Stack 또는 재귀 호출 스택을 사용하여 한 경로를 가능한 깊게 탐색한 뒤 되돌아온다. 두 방식 모두 이미 방문한 정점을 다시 탐색하지 않도록 visited 상태를 관리해야 한다. 인접 리스트를 사용하면 두 탐색 모두 `O(V+E)`, 인접 행렬을 사용하면 `O(V²)`의 시간이 걸린다. 무가중치 그래프의 최단 거리에는 BFS가 적합하다.
+
+
+
+
+
+# 0-1 BFS
+
+## 문제 설명
+
+N × N 격자 형태의 서버실에서 `(1,1)`부터 `(N,N)`까지 이동한다.
+
+- `1` : 통로, 비용 없이 이동 가능
+- `0` : 보안 문, 통과하려면 해킹 1회 필요
+- 상하좌우 이동 가능
+
+목표는 목적지까지 이동하면서 필요한 **보안 문 해킹 횟수의 최솟값**을 구하는 것이다.
+
+```java
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
+public class Main {
+	static int N;
+	static int[][] map;
+	static int[][] dist;
+	
+	static int[] dr = {-1,1,0,0};
+	static int[] dc = {0,0,-1,1};
+	
+	static class Node{
+		int r;
+		int c;
+		
+		Node(int r, int c){
+			this.r = r;
+			this.c = c;
+		}
+	}
+	
+	public static void main(String[] args) throws Exception{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		N = Integer.parseInt(br.readLine());
+		
+		map = new int[N][N];
+		dist = new int[N][N];
+		
+		// 지도 입력
+		for(int r = 0; r < N; r++){
+			String line = br.readLine();
+			
+			for(int c = 0; c < N; c++){
+				map[r][c] = line.charAt(c) - '0';
+			}
+		}
+		
+		// 최소 해킹 횟수 초기화
+		for(int r = 0; r < N; r++){
+			Arrays.fill(dist[r], Integer.MAX_VALUE);
+		}
+		
+		Deque<Node> deque = new ArrayDeque<>();
+		
+		// 시작점은 해킹 비용 없음
+		dist[0][0] = 0;
+		deque.offerFirst(new Node(0,0));
+		
+		while(!deque.isEmpty()){
+			Node.current = deque.pollFirst();
+			for(int d = 0; d < 4; d++){
+				int nr = current.r + dr[d];
+				int nc = current.c + dc[d];
+				
+				// 범위 밖
+				if(nr < 0 || nr >= N || nc < 0 || nc >= N){
+					continue;
+				}
+                /*
+                 * 통로(1) → 비용 0
+                 * 보안 문(0) → 비용 1
+                 */
+                 int weight;
+                 
+                 if(map[nr][nc] == 1){
+	                 weight = 0;
+                 }else{
+	                 weight = 1;
+                 }
+                 
+                 int newCost = dist[current.r][current.c] + weight;
+                 
+                 // 기존보다 더 적은 해킹 횟수로 갈 수 있는 경우
+                 if(newCost < dist[nr][nc]){
+	                 dist[nr][nc] = newCost;
+	                 
+	                 if(weight == 0){
+		                 // 비용이 증가하지 않으므로 먼저 탐색
+		                 deque.offerFirst(new Node(nr,nc));
+	                 }else{
+		                 deque.offerLast(new Node(nr,nc));
+	                 }
+                 }
+			}
+		}
+		System.out.println(dist[N-1][N-1]);
+	}
+}
+```
