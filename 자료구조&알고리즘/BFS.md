@@ -139,9 +139,101 @@ BFS는 시작점에서 거리 1, 거리 2, 거리 3 순서로 탐색한다.
 
 
 
-
-
 # 0-1 BFS
+
+#Deque 
+
+대표 문제 BOJ 2665 미로 만들기
+```java
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
+
+public class Main{
+	static int N;
+	static int[][] map;
+	static int[][] dist;
+	
+	static int[] dr = {-1, 1, 0, 0};
+	static int[] dc = {0, 0, -1, 1};
+	
+	static class Node{
+		int r;
+		int c;
+		
+		Node(int r, int c){
+			this.r = r;
+			this.c = c;
+		}
+	}
+	
+	public static void main(String[] args) throws Exception{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		
+		N = Integer.parseInt(br.readLine());
+		
+		map = new int[N][N];
+		dist = new int[N][N];
+		
+		// 지도 입력
+		for(int r=0; r < N; r++){
+			String line = br.readLine();
+			
+			for(int c = 0; c < N; c++){
+				map[r][c] = line.charAt(c) - '0';
+			}
+		}
+		
+		// 최소 변경 횟수 초기화
+		for(int r = 0; r < N; r++){
+			Arrays.fill(dist[r], Integer.MAX_VALUE);
+		}
+		
+		Deque<Node> deque = new ArrayDeque<>();
+		
+		// 시작점
+		dist[0][0] = 0;
+		deque.offerFIrst(new Node(0,0));
+		
+		while(!deque.isEmpty()){
+			Node current = deque.pollFirst();
+			
+			for(int d = 0; d < 4; d++){
+				int nr = current.r + dr[d];
+				int nc = current.c + dc[d];
+				
+				// 범위 밖
+				if(nr < 0 || nr >= N || nc < 0 || nc >= N){
+					continue;
+				}
+				
+				// 흰방(1) -> 비용 0
+				// 검은방(0) -> 비용 1
+				int weight = (map[nr][nc] == 1) ? 0 : 1;
+				
+				int newCost = dist[current.r][current.c] + weight;
+				
+				// 더 적은 검은 방 변경으로 갈 수 있는 경우
+				if(newCost < dist[nr][c]){
+					dist[nr][nc] = newCost;
+					
+					if(weight == 0){
+						// 비용이 증가하지 않으므로 앞에 삽입
+						deque.offerFirst(new Node(nr,nc));
+					}else{
+						// 비용이 1증가하므로 뒤에 삽입
+						deque.offerLast(new Node(nr,nc));
+					}
+				}
+			}
+		}
+		
+		System.out.println(dist[N-1][N-1]);
+	}
+}
+```
 
 ## 문제 설명
 
@@ -207,7 +299,7 @@ public class Main {
 		deque.offerFirst(new Node(0,0));
 		
 		while(!deque.isEmpty()){
-			Node.current = deque.pollFirst();
+			Node current = deque.pollFirst();
 			for(int d = 0; d < 4; d++){
 				int nr = current.r + dr[d];
 				int nc = current.c + dc[d];

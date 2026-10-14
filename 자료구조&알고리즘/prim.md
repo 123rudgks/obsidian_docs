@@ -180,6 +180,8 @@ u ← Extract-MIN(...)
 최소값을 더 빠르게 찾기 위해 [[우선순위 큐]]를 사용할 수 있다.
 >Prim + PriorityQueue는 현재 MST에서 밖으로 나가는 모든 후보 간선을 PQ에 모아두고, 그중 가장 싼 간선을 반복해서 선택하는 방식이다.
 ## PriorityQueue를 이용한 Prim 구현
+**Keyword** : #visited #Edge
+
 ```java
 import java.util.ArrayList;
 import java.util.List;
