@@ -37,7 +37,11 @@ find(a) != find(b)
 
 > Kruskal 과정 중간에는 여러개의 집합들이 발생할 수 있다. 그러나 최종적으론 하나의 MST로 union 된다.
 
-## 구현 순서
+>[!note]+ 음의 가중치 허용
+>Prim은 각 정점까지의 누적 최단거리를 확정하는 알고리즘이 아니라, 현재 MST와 바깥 정점을 연결하는 간선 중 가장 작은 간선을 선택하는 알고리즘이다. 따라서 간선의 가중치가 음수여도 단순히 더 작은 간선으로 취급될 뿐, 알고리즘의 선택 기준이나 MST의 성질이 깨지지 않는다.
+# 키워드
+#Union-Find #Cut-Property
+## 로직
 1. 모든 간선을 저장한다.
 2. 간선을 가중치 기준 오름차순으로 정렬한다.
 3. 각 정점을 자기 자신만 포함하는 집합으로 초기화한다.
@@ -129,7 +133,7 @@ public class Main {
 		int V = Integer.parseInt(st.nextToken());
 		int E = Integer.parseInt(st.nextToken());
 		
-		Edge[] edges = new Edges[E];
+		Edge[] edges = new Edge[E];
 		
 		for(int i = 0; i < E; i++){
 			st = new StringTokenizer(br.readLine());
@@ -173,7 +177,7 @@ public class Main {
 ```
 O(E log E)
 ```
-[[[Union-Find]]의 ```find```, ```union``` 은 경로 압축 등을 사용하면 매우 빠르게 동작하므로 전체 시간 복잡도는 보통
+[[Union-Find]]의 ```find```, ```union``` 은 경로 압축 등을 사용하면 매우 빠르게 동작하므로 전체 시간 복잡도는 보통
 ```
 O(E log E)
 ```
