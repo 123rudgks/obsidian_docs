@@ -150,9 +150,9 @@ public class Main {
 
             visited[minVertex] = true;
             totalCost += minCost;
-
-            // 새로 들어온 정점을 이용해
-            // 나머지 정점의 최소 연결 비용 갱신
+			
+			// 현재 minEdge는 현재까지 mst에 포함된 정점들로부터 나가는 간선을 고려햐여 갱신된 값
+            // 여기에 새로 들어온 정점을 이용해 나머지 정점의 최소 연결 비용 갱신
             for (int next = 0; next < V; next++) {
 
                 if (visited[next]) {
