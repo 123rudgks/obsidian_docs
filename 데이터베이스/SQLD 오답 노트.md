@@ -197,6 +197,12 @@ join의 종류
 - CROSS JOIN (카테시안 곱)
 	한 쪽 테이블의 모든 행이 다른쪽 테이블의 모든 행과 한 번씩 연결되는 조인
 
+셀프 조인
+```SQL
+SELECT 별칭1.컬럼, 별칭2.컬럼
+FROM 테이블 별칭1, 테이블 별칭 2
+WHERE 조인 조건;
+```
 
 
 UNION ALL / UNION
@@ -210,7 +216,9 @@ MINUS / EXCEPT
 	첫 번째 SELECT 결과에서 두 번째 SELECT문의 결과와 겹치는 행을 제외한 나머지(차집합)를 반환
 
 
-그룹 함수
+그룹 함수 
+> 실제 사용 예제 보면서 확인
+
 ROLLUP
 ```SQL
 SELECT A, B, 집계 함수
@@ -242,14 +250,222 @@ GROUP BY GROUPING SETS(그룹1, 그룹2)
 ```
 
 GROUPING
+ROLLUP이나 CUBE를 사용하면 요약 정보를 나타내는 행의 그룹 컬럼에 NULL이 표시된다.
+또 원본 데이터에도 NULL이 있었다면 이 둘을 구분하기 힘들다.
+GROUPING은 이 문제를 해결하기 위한 도구로 요약된 행이면 1, 실제 데이터 행이면 0을 반환한다.
+```SQL
+SELECT 그룹컬럼1, 집계함수, GROUPING(그룹컬럼1) AS 별칭
+FROM 테이블
+GROUP BY ROLLUP(그룹컬럼1);
+```
 
 
-RANKING 쿼리
-- DENSE_RANK
+윈도우 함수
+> 실제 사용 예시를 보면서 이해
 
-LAST?
+GROUP BY는 전체 행을 묶어서 결과 행을 반환하는 것에 반해 윈도우 함수는 원본 행의 개수를 유지하면서 각 행에 별도의 컬럼을 추가하여 결과를 보여준다.
+
+OVER절
+1. PARTITION BY
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME,AVG(SALARY) OVER (PARTITION BY DEPT_NAME) AS DEPT_AVG_SALARY
+FROM EMPLOYEES;
+```
+
+2. ORDER BY
+```SQL
+SELECT EMP_NAME, SALARY, RANK() OVER (ORDER BY SALARY DESC) AS SALARY_RANK
+FROM EMPLOYEES;
+```
 
 
+순위 함수
+1. RANK
+	ORDER BY로 지정된 컬럼 값을 기준으로 각 행의 순위를 계산
+	공동 순위가 있다면 그 다음 순위는 공동 순위의 수 만큼 건너뛴 수부터 시작된다.
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, SALARY, 
+	RANK() OVER (PARTITION BY DEPT_NAME ORDER BY SALARY DESC) AS DEPT_RANK
+FROM EMPLOYEES;
+```
+2. DENSE_RANK
+	RANK이지만 공동 순위의 수 만큼 건너 뛰지 않고 공동 순위 다음 수부터 시작한다.
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, SALARY
+	DENSE_RANK() OVER (PARTITION BY DEPT_NAME ORDER BY SALARY DESC) AS DEPT_DENSE_RANK
+FROM EMPLOYEES;
+```
+3. ROW_NUMBER
+	ORDER BY로 정렬된 순서에 따라 각 행에 순차적인 순번을 부여한다.
+	동일한 값이 있어도 건너뛰지 않고 순차적인 순번을 이어간다.
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, SALARY
+	ROW_NUMBER() OVER (PARTITION BY DEPT_NAME ORDER BY SALARY DESC) AS DEPT_ROW_NUM
+FROM EMPLOYEES;
+```
+4. PERCENT_RANK
+	그룹 내에서 현재 행의 백분위 순위를 0(가장 낮은 순위), 1(가장 높은 순위) 사이의 값으로 반환한다.
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, SALARY,
+	PERCENT_RANK() OVER (PARTITION BY DEPT_NAME ORDER BY SALARY ASC) AS PERCENTILE_RANK
+FROM EMPLOYEES;
+```
+
+
+집계 함수 with OVER절
+1. SUM
+	ORDER BY로 정의된 순서에 따른 누적 합계 계산
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, HIRE_DATE, SALARY,
+	SUM(SALARAY) OVER (PARTITION BY DEPT_NAME ORDER BY HIRE_DATE) AS RUNNING_TOTAL
+FROM EMPLOYEES;
+```
+2. MAX, MIN
+	PARTITION 내의 MAX,MIN 값 표시
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, SALARY,
+	MAX(SALARY) OVER (PARTITION BY DEPT_NAME) AS DEPT_MAX_SALARY,
+	MIN(SALARY) OVER (PARTITION BY DEPT_NAME) AS DEMPT_MIN_SALARY
+FROM EMPLOYEES;
+```
+3. AVG
+	PARTITION 냬의 AVG값 표시
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME, SALARY,
+	TRUNC(AVG(SALARY) OVER (PARTITION BY DEPT_NAME)) AS DEPT_AVG_SALARY
+FROM EMPLOYEES;
+```
+3. COUNT
+	PARTITION의 행의 갯수
+```SQL
+SELECT
+	EMP_NAME, DEPT_NAME,
+	COUNT(*) OVER (PARTITION BY DEPT_NAME) AS DEPT_EMP_COUNT
+FROM EMPLOYEES;
+```
+
+
+행 순서 함수
+	ORDER BY로 정렬된 그룹 내에서 현재 행을 기준으로 특정 행의 값을 직접 참조 할수 있게 하는 윈도우 함수
+	행과 행 간의 관계 분석시 유용
+1. FIRST_VALUE
+	ORDER_BY 순서에서 가장 첫 번째에 위치한 행의 값 반환
+```SQL
+SELECT
+	EMP_NAME,DEPT_NAME,HIRE_DATE,
+	FIRST_VALUE(EMP_NAME) OVER (PARTITION BY DEPT_NAME ORDER BY HIRE_DATE ASC) AS FIRST_HIRED
+FROM EMPLOYEES;
+```
+2. LAST_VALUE
+	ORDER BY 순서에서 가장 마지막에 위치한 행의 값 반환
+```SQL
+SELECT
+	EMP_NAME,DEPT_NAME,HIRE_DATE,
+	LAST_VALUE(EMP_NAME) OVER (
+		PARTITION BY DEPT_NAME
+		ORDER BY HIRE_DATE
+		ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+		) AS LAST_HIRED
+FROM EMPLOYEES;
+```
+> [!note]
+> 윈도우 함수는 계산 범위를 기본적으로 그룹의 처음부터 **현재 행**까지로 제한한다. 따라서 그냥 LAST_VALUE를 하면 그룹 마지막이 아닌 현재 행이 나온다.
+> 따라서 ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING 이라는 구문 추가해야함.
+
+
+계층형 질의
+START WITH, CONNECT BY
+```SQL
+SELECT LEVEL 컬럼목록
+FROM 테이블
+START WITH 시작조건
+CONNECT BY PRIOR 부모컬럼=자식컬럼
+ORDER SIBILINGS BY EMP_NAME ASC;
+```
+- START WITH : 계층 탐색을 시작할 행 지정
+- CONNECT BY : 부모 행과 자식 행 사이의 관계 정의. PRIOR 연산자는 연결 조건에서 부모 행의 컬럼을 가리킨다.
+- LEVEL : (옵셔널) 가상 컬럼이 추가되어, 각 직원이 계층 구조의 몇 번째 깊이에 위치하는지 숫자로 보여줌
+- ORDER SIBLINGS BY : (옵셔널) 계층 구조는 유지하며 같은 레벨의 행끼리만 정렬
+	그냥 ORDER BY 쓰면 START WITH..CONNECT BY 구조가 무너지고 ORDER BY가 덮어씀
+
+CONNECT_BY_ROOT
+	현재 행이 속한 계층의 최상위 루트 행의 값을 반환
+```SQL
+SELECT
+	EMP_NAME,
+	CONNECT_BY_ROOT EMP_NAME AS TOP_MANAGER
+FROM EMPLOYEES
+START WITH MNAGER_ID IS NULL
+CONNECT BY PRIOR EMP_ID = MANAGER_ID;
+```
+SYS_CONNECT_BY_PATH
+	루트 행부터 현재 행까지의 경로를 지정된 구분자를 포함한 문자열로 반환
+```SQL
+SELECT
+	EMP_NAME,
+	SYS_CONNECT_BY_PATH(EMP_NAME,'>') AS PATH
+FROM EMPLOYEES
+START WITH MANAGER_ID IS NULL
+CONNECT BY PRIOR EMP_ID = MANAGER_ID;
+```
+
+
+정규 표현식
+기본 문법
+
+| 메타 문자  | 설명                       | 예시                                |
+| ------ | ------------------------ | --------------------------------- |
+| ^      | 문자열 시작                   | ^A : 'A'로 시작하는 문자열                |
+| $      | 문자열 끝                    | A$ : 'A'로 끝나는 문자열                 |
+| .      | 임의의 한 글자                 | A.B : 'A'와 'B' 사이에 한 글자가 있는 문자열   |
+| \*     | 바로 앞 문자가 0번 이상 나타남       | A\*B : 'B'앞에 'A'가 없거나 여러 개 있는 문자열 |
+| +      | 바로 앞 문자가 1번 이상 나타남       | A+B : 'B' 앞에 A가 최소 1개 이상 있는 문자열   |
+| ?      | 바로 앞 문자가 0번 또는 1번 나타남    | A?B : 'B' 앞에 'A'가 없거나 1개 있는 문자열   |
+| [ ]    | 괄호 안 문자 중 하나 의미          | \[ABC] : 'A', 'B', 'C' 중 한 글자     |
+| \|     | 여러 단어나 패턴 중 하나           | A\|B : 'A' 또는 'B'                 |
+| {m, n} | 바로 앞 문자가 m번 이상 n번 이하 나타남 | A{2,3} : 'A'가 2번 또는 3번 반복되는 문자열   |
+
+정규 표현식 함수
+1. REGEXP_LIKE
+	주어진 문자열이 특정 정규표현식 패턴을 포함하는지 여부 검사하여 True,False 반환
+```SQL
+SELECT EMP_NAME, PHONE_NUMBER
+FROM EMP_DATA
+WHERE REGEXP_LIKE(PHONE_NUMBER, '^[0-9]{3}-[0-9]{4}-[0-9]{4}$');
+```
+2. REGEXP_SUBSTR
+	문자열에서 정규표현식 패턴과 일치하는 부분을 찾아 추출하는 함수
+```SQL
+SELECT EMP_NAME, EMAIL, REGEXP_SUBSTR(EMAIL,'@[A-Za-z0-9.-]+') AS DOMAIN
+FROM EMP_DATA;
+```
+3. REGEXP_REPLACE
+	문자열에서 정규표현식 패턴과 일치하는 부분을 찾아 다른 문자열로 치환하거나 삭제하는 함수
+```SQL
+SELECT EMP_NAME, PHONE_NUMBER, REGEXP_REPLACE(PHONE_NUMBER, '-[0-9]{4}-','-****-') AS MASKED_PHONE
+FROM EMP_DATA
+WHERE REGEXP_LIKE(PHONE_NUMBER,'^[0-9]{3}-[0-9]{4}-[0-9]{4}$')
+```
+4. REGEXP_COUNT
+	문자열 안에서 특정 정규표현식 패턴이 몇 번 나타나는지 그 횟수를 숫자로 반환
+```SQL
+SELECT EMP_NAME, PHONE_NUMBER, REGEXP_COUNT(PHONE_NUMBER,'-') AS DASH_COUNT
+FROM EMP_DATA
+```
+5. REGEXP_INSTR
+	특정 정규표현식 패턴이 시작되는 위치를 숫자로 반환
+```SQL
+SELECT EMP_NAME,EMAL,REGEXP_INSTR(EMAIL,'@') AS DOMAIN_START_POS
+FROM EMP_DATA;
+```
 
 DDL
 DCL
@@ -258,21 +474,9 @@ TCL
 사용 예시
 
 
-Self Join
-	하나의 테이블 내에 관계가 있을 때 사용한다.
-	두 개의 다른 별칭으로 join 함
-EQUI Join
 
 
-REGEXP_SUBSTR
-정규표현식 기본 문법
 
-REGEXP_COUNT
-REGEXP_LIKE
-REGEXP_REPLACE
-REGEXP_INSTR
-
-ORDER BY 기본 정렬(오름차순)
 
 UPDATE 사용법
 INSERT 사용법 
@@ -280,39 +484,23 @@ DELETE 사용법
 
 SELECT문 실행 순서
 
-윈도우 함수
-
-ROW_NUMBER
-PERCENT_RANK
-RANK
-DENSE_RANK
 
 ACID 이해
 
-START WITH
-CONNECT BY PRIOR
-CONNECT BY ROOT
-SYS CONNECT BY PATH
+
 NOCYCLE
-ORDER SIBILINGS BY
+
 
 FROM절에 여러 테이블을 쉼표(,)로 나열하고 WHERE 절에 조인 생략하면 카테시안 곱이 발생함
 
 UNIQUE
 
-UNION, UNION ALL, INTERSECT, MINUS(EXCEPT)
 
 NULL이 포함된 산술 연산가 집계 함수의 처리 순서
 집계 함수는 NULL을 무시한다.
 SUM(Q1 + Q2 + Q3) : 먼저 연산을 수행하고 각 행별 NULL 제외하고 SUM 처리
 
-NVL
 
 MERGE INTO
 
 해시 조인
-
-ROLLUP
-CUBE
-GROUPING
-SET
