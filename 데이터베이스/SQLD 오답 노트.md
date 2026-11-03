@@ -467,40 +467,108 @@ SELECT EMP_NAME,EMAL,REGEXP_INSTR(EMAIL,'@') AS DOMAIN_START_POS
 FROM EMP_DATA;
 ```
 
-DDL
-DCL
+
 DML
+1. INSERT
+```SQL
+INSERT INTO EMPLOYEES(EMP_ID, EMP_NAME, DEPT_NAME,SALARY)
+VALUES(103,'임한울', 'Sales', 7200)
+```
+2. UPDATE
+```SQL
+UPDATE EMPLOYEES
+SET DEPT_NAME = 'Marketing'
+WHERE EMP_ID = 101;
+```
+3. DELETE
+```SQL
+DELETE FROM EMPLOYEES
+WHERE EMP_ID = 102;
+```
+4. MERGE
+	두 테이블 데이터 비교하여 새로운 데이터면 추가, 존재하면 수정을 하는 작업
+```SQL
+MERGE INTO EMPLOYEES e
+USING EMP_UPDATES u
+ON (e.EMP_ID = u.EMP_ID)
+WHEN MATCHED THEN
+	UPDATE SET e.DEPT_NAME = u.DEPT_NAME
+WHEN NOT MATCHED THEN
+	INSERT(e.EMP_ID, e.EMP_NAME, e.DEPT_NAME)
+	VALUES(u.EMP_ID, u.EMP_NAME,u.DEPT_NAME);
+```
+
 TCL
-사용 예시
+COMMIT
+ROLLBACK
+SAVEPOINT
 
+DDL
+1. CREATE
+```SQL
+CREATE TABLE 테이블명 (
+	컬럼명1 데이터 유형 [CONSTRAINT 제약 조건이름 제약조건],
+	컬럼명2 데이터 유형 [CONSTRAINT 제약 조건이름 제약조건],
+)
+```
+	데이터 유형
+	- VARCHAR2 : 가변길이 문자열
+	- CHAR : 고정길이 문자열
+	- CLOB : 대용량텍스트
+	- NUMBER : 숫자 (정수 및 소수)
+	- DATE : 날짜와 시간
+	제약조건
+	- PRIMARY KEY
+	- FOREIGN KEY
+	- NOT NULL
+	- UNIQUE : 해당 컬럼에 중복된 값이 들어오는 걸 막음. NULL 은 허용
+	- CHECK : 입력될 수 있는 값의 범위, 조건을 직접 지정
+		CONSTRAINT CHK_SALARY CHECK (SALARY > 0 )
+2. ALTER
+	1. ADD COLUMN
+		ALTER TABLE 테이블명 ADD 컬럼명 데이터 유형;
+	2. DROP COLUMN
+		ALTER TABLE 테이블명 DROP COLUMN 컬럼명;
+	3. MODIFY COLUMN
+		ALTER TABLE 테이블명 MODIFY (컬럼명1 데이터 유형 \[DEFAULT값] \[NOT NULL]);
+	4. RENAME COLUMN
+		ALTER TABLE 테이블명 RENAME COLUMN 기존 컬럼명 TO 새 컬럼명;
+	5. ADD CONSTRAINT
+		ALTER TABLE 테이블명 ADD CONSTRAINT 제약조건명 제약조건 (컬럼명);
+3. RENAME TABLE
+	RENAME 테이블명 TO 새테이블명;
+4. DROP TABLE
+	DROP TABLE 테이블명 \[CASCADE CONSTRAINTS];
+5. TRUNCATE TABLE
+	TRUNCATE TABLE 테이블명;
 
+DCL
+USER 관련 명령어
+1. CREATE USER
+	CREATE USER 사용자명 IDENTIFIED BY 비밀번호
+2. ALTER USER
+	ALTER USER 사용자명 IDENTIFIED BY 비밀번호
+3. DROP USER
+	DROP USER 사용자명
 
+권한 관련 명령어
+1. GRANT
+	GRANT 권한 TO 사용자;
+2. REVOKE
+	REVOKE 권한 FROM 사용자;
 
+ROLE 관련 명령어
+1. 역할 생성
+	CREATE ROLE 역할 이름;
 
-
-UPDATE 사용법
-INSERT 사용법 
-DELETE 사용법
-
-SELECT문 실행 순서
-
-
-ACID 이해
-
-
-NOCYCLE
 
 
 FROM절에 여러 테이블을 쉼표(,)로 나열하고 WHERE 절에 조인 생략하면 카테시안 곱이 발생함
-
-UNIQUE
 
 
 NULL이 포함된 산술 연산가 집계 함수의 처리 순서
 집계 함수는 NULL을 무시한다.
 SUM(Q1 + Q2 + Q3) : 먼저 연산을 수행하고 각 행별 NULL 제외하고 SUM 처리
 
-
-MERGE INTO
 
 해시 조인
