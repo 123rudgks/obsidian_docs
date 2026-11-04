@@ -56,7 +56,6 @@
 
 
 
-
 속성
 	의미상 더 이상 분리되지 않는 최소의 데이터 단위
 
@@ -354,6 +353,13 @@ SELECT
 FROM EMPLOYEES;
 ```
 
+KEEP 문법
+	선택된 행들만 집계 대상으로 사용
+```SQL
+집계함수(컬럼A)
+KEEP (DENSE_RANK FIRST | LAST ORDER BY 컬럼B ASC | DESC)
+```
+
 
 행 순서 함수
 	ORDER BY로 정렬된 그룹 내에서 현재 행을 기준으로 특정 행의 값을 직접 참조 할수 있게 하는 윈도우 함수
@@ -389,7 +395,7 @@ START WITH, CONNECT BY
 SELECT LEVEL 컬럼목록
 FROM 테이블
 START WITH 시작조건
-CONNECT BY PRIOR 부모컬럼=자식컬럼
+CONNECT BY NOCYCLE PRIOR 부모컬럼=자식컬럼
 ORDER SIBILINGS BY EMP_NAME ASC;
 ```
 - START WITH : 계층 탐색을 시작할 행 지정
@@ -397,6 +403,7 @@ ORDER SIBILINGS BY EMP_NAME ASC;
 - LEVEL : (옵셔널) 가상 컬럼이 추가되어, 각 직원이 계층 구조의 몇 번째 깊이에 위치하는지 숫자로 보여줌
 - ORDER SIBLINGS BY : (옵셔널) 계층 구조는 유지하며 같은 레벨의 행끼리만 정렬
 	그냥 ORDER BY 쓰면 START WITH..CONNECT BY 구조가 무너지고 ORDER BY가 덮어씀
+- NOCYCLE : 순환 관계가 발생할 때, 이미 지나온 행 방향으로 더 이상 탐색하지 않도록 막아줌
 
 CONNECT_BY_ROOT
 	현재 행이 속한 계층의 최상위 루트 행의 값을 반환
@@ -572,5 +579,36 @@ NULL이 포함된 산술 연산가 집계 함수의 처리 순서
 집계 함수는 NULL을 무시한다.
 SUM(Q1 + Q2 + Q3) : 먼저 연산을 수행하고 각 행별 NULL 제외하고 SUM 처리
 
+단순 산술 연산에 NULL 섞이면 결과 NULL
+10 + NULL : NULL
+10 > NULL : NULL
+
+집계 함수는 NULL 무시하고 연산
+SUM(10, NULL, 20) : 30
+
 
 해시 조인
+
+
+SQL의 논리적 실행 순서
+FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY
+> note. WHERE -> HAVING 순서
+
+
+NOT IN 과 NULL 관계
+```SQL
+WHERE prod_id NOT IN (1,2,3)
+```
+위 연산은 논리적으로 아래와 같다.
+```SQL
+WHERE prod_id <> 1 AND prod_id <> 2 AND prod_id <> 3
+```
+
+따라서 NULL이 섞이면 연산 값이 `UNKNOWN`이 된다.
+
+다중 컬럼 NOT IN에선 다른 케이스도 있는데, NULL 이 아닌 컬럼값이 이미 다른게 확실하면 NULL과 무관하게 이미 NOT IN이 확정 되므로 TRUE 판정 가능
+```SQL
+(1, 사과) NOT IN (NULL, 사과) // 이건 UNKOWN
+(1, 사과) NOT IN (NULL, 바나나) // 이건 TRUE
+```
+
